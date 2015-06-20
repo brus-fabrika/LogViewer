@@ -1,7 +1,9 @@
 package com.revimedia.log.model;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.RandomAccessFile;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A log file tailer is designed to monitor a log file and send notifications
@@ -85,7 +87,7 @@ public class FileTailer extends Thread {
 	}
 
 	public void run() {
-		System.out.println("FailTailer thread started for file: " + logfile.getName());
+		System.out.println("FileTailer thread started for file: " + logfile.getName());
 		// The file pointer keeps track of where we are in the file
 		long filePointer = 0;
 
@@ -116,7 +118,9 @@ public class FileTailer extends Thread {
 						file.seek(filePointer);
 						String line = file.readLine();
 						while (line != null) {
-							this.fireNewLogFileLine(line);
+							if(!line.isEmpty()) {
+								this.fireNewLogFileLine(line);
+							}
 							line = file.readLine();
 						}
 						filePointer = file.getFilePointer();

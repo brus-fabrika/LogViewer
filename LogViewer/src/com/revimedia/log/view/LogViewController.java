@@ -73,6 +73,16 @@ public class LogViewController implements FileTailerListener{
 		
 		mLogTable.setItems(mLogs);
 		
+		if(mLogFileTailer != null) {
+			mLogFileTailer.stopTailing();
+			try {
+				mLogFileTailer.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 		mLogFileTailer = new FileTailer(logFile, FILE_POOLING_INTERVAL, true);
 		mLogFileTailer.addLogFileTailerListener(this);
 		
