@@ -10,8 +10,9 @@
    <center>
       <TableView fx:id="mLogTable" prefHeight="200.0" prefWidth="742.0" BorderPane.alignment="CENTER">
         <columns>
-          <TableColumn fx:id="mTimeColumn" minWidth="50.0" prefWidth="150.0" text="Time" />
-          <TableColumn fx:id="mPayloadColumn" editable="false" prefWidth="587.0" text="Payload" />
+            <TableColumn fx:id="mLineNumberColumn" editable="false" prefWidth="75.0" sortable="false" text="#" />
+          <TableColumn fx:id="mTimeColumn" editable="false" minWidth="50.0" prefWidth="150.0" sortable="false" text="Time" />
+          <TableColumn fx:id="mPayloadColumn" editable="false" prefWidth="587.0" sortable="false" text="Payload" />
         </columns>
       </TableView>
    </center>
