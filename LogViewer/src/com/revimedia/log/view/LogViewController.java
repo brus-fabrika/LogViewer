@@ -18,7 +18,7 @@ import com.revimedia.log.model.LogEntry;
 
 public class LogViewController implements FileTailerListener{
 
-	private static final int FILE_POOLING_INTERVAL = 1000;
+	private static final int FILE_POOLING_INTERVAL = 5000;
 	@FXML
 	private TableView<LogEntry> mLogTable;
 	@FXML
@@ -46,7 +46,14 @@ public class LogViewController implements FileTailerListener{
 	private void onRegexUpdate() {
 		System.out.println("LogViewTableViewController.onRegexUpdate()");
 		
-		if(mRegexFilterText.getText().isEmpty()) return;
+		if(mRegexFilterText.getText().isEmpty()) {
+			mLogs.clear();
+			if(!mLogsList.isEmpty()) {
+				mLogs.setAll(mLogsList);
+			}
+			return;
+		}
+		
 		if(mRegexFilterText.getText().equals(mRegex)) return;
 		
 		mRegex = "(" + mRegexFilterText.getText() + ")";
@@ -95,7 +102,7 @@ public class LogViewController implements FileTailerListener{
 	}
 
 	@Override
-	public void newFileLine(String line) {
+	public void onNewFileLine(String line) {
 		System.out.println( line );
 		LogEntry e = new LogEntry(line);
 		mLogsList.add(e);
@@ -104,6 +111,8 @@ public class LogViewController implements FileTailerListener{
 
 	public void stopProcessLogging() {
 		System.out.println("Stop process the log");
-		mLogFileTailer.stopTailing();
+		if(mLogFileTailer != null) {
+			mLogFileTailer.stopTailing();
+		}
 	}
 }

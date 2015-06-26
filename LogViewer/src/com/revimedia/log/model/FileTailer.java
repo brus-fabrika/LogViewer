@@ -78,7 +78,7 @@ public class FileTailer extends Thread {
 
 	protected void fireNewLogFileLine(String line) {
 		for (FileTailerListener l: this.listeners) {
-			l.newFileLine(line);
+			l.onNewFileLine(line);
 		}
 	}
 

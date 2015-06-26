@@ -103,7 +103,7 @@ public class MainApp extends Application {
 
 	public void loadLogFile() {
 		FileChooser fileChooser = new FileChooser();
-		fileChooser.setInitialDirectory(new File("D:\\temp\\"));
+		fileChooser.setInitialDirectory(new File("D:\\"));
 		File logFile = fileChooser.showOpenDialog(primaryStage);
 		if(logFile != null) {
 			logViewController.loadLogData(logFile);
