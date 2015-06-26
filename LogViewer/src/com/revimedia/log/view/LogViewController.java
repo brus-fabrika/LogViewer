@@ -22,6 +22,8 @@ public class LogViewController implements FileTailerListener{
 	@FXML
 	private TableView<LogEntry> mLogTable;
 	@FXML
+	private TableColumn<LogEntry, Number> mLineNumberColumn;
+	@FXML
 	private TableColumn<LogEntry, String> mPayloadColumn;
 	@FXML
 	private TableColumn<LogEntry, String> mTimeColumn;
@@ -38,8 +40,12 @@ public class LogViewController implements FileTailerListener{
 	
 	@FXML
 	private void initialize() {
+		mLineNumberColumn.setCellValueFactory(cellData -> cellData.getValue().lineNumberProperty());
 		mPayloadColumn.setCellValueFactory(cellData -> cellData.getValue().payloadProperty());
 		mTimeColumn.setCellValueFactory(cellData -> cellData.getValue().timestampProperty());
+		
+		mLineNumberColumn.setMinWidth(50);
+		
 	}
 	
 	@FXML
@@ -104,7 +110,7 @@ public class LogViewController implements FileTailerListener{
 	@Override
 	public void onNewFileLine(String line) {
 		System.out.println( line );
-		LogEntry e = new LogEntry(line);
+		LogEntry e = new LogEntry(line, mLogsList.size()+1);
 		mLogsList.add(e);
 		mLogs.add(e);
 	}
