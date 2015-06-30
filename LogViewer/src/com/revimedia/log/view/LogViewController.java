@@ -45,7 +45,6 @@ public class LogViewController implements FileTailerListener{
 		mTimeColumn.setCellValueFactory(cellData -> cellData.getValue().timestampProperty());
 		
 		mLineNumberColumn.setMinWidth(50);
-		
 	}
 	
 	@FXML
@@ -115,6 +114,10 @@ public class LogViewController implements FileTailerListener{
 		mLogs.add(e);
 	}
 
+	public void onCtrlC() {
+		System.out.println( "Ctrl-C pressed !!!" );
+	}
+	
 	public void stopProcessLogging() {
 		System.out.println("Stop process the log");
 		if(mLogFileTailer != null) {
