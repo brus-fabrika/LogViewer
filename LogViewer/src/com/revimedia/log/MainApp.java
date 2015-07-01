@@ -6,14 +6,16 @@ import java.io.File;
 import java.io.IOException;
 
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 import com.revimedia.log.view.LogViewController;
 import com.revimedia.log.view.RootLayoutController;
@@ -49,13 +51,7 @@ public class MainApp extends Application {
 
 		showLogView();
 		
-		this.primaryStage.setOnCloseRequest( new EventHandler<WindowEvent>() {
-			
-			@Override
-			public void handle(WindowEvent event) {
-				logViewController.stopProcessLogging();
-			}
-		});
+		this.primaryStage.setOnCloseRequest( event -> logViewController.stopProcessLogging() );
 	}
 
 	public void initRootLayout() {
@@ -84,6 +80,16 @@ public class MainApp extends Application {
 			BorderPane logView = (BorderPane) loader.load();
 
 			logViewController = loader.getController();
+			
+			final KeyCombination keyComb1 = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN);
+			
+			logView.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
+				if (keyComb1.match(event)) {
+					logViewController.onCtrlC();
+				}
+			});
+			
+			
 			
 			// Set person overview into the center of root layout.
 			rootLayout.setCenter(logView);
