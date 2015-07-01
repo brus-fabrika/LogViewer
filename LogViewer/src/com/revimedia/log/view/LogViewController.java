@@ -8,9 +8,12 @@ import java.util.regex.Pattern;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 
 import com.revimedia.log.model.FileTailer;
 import com.revimedia.log.model.FileTailerListener;
@@ -45,6 +48,8 @@ public class LogViewController implements FileTailerListener{
 		mTimeColumn.setCellValueFactory(cellData -> cellData.getValue().timestampProperty());
 		
 		mLineNumberColumn.setMinWidth(50);
+		
+		mLogTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 	}
 	
 	@FXML
@@ -116,6 +121,20 @@ public class LogViewController implements FileTailerListener{
 
 	public void onCtrlC() {
 		System.out.println( "Ctrl-C pressed !!!" );
+		
+		ObservableList<LogEntry> selectedRows = mLogTable.getSelectionModel().getSelectedItems();
+		StringBuilder clipContent = new StringBuilder();
+		for(LogEntry log: selectedRows) {
+			clipContent.append(String.format("%s\t%s\n",
+				log.getTimeStamp() == null ? "" : log.getTimeStamp(),
+				log.getPayload() == null ? "" : log.getPayload()));
+		}
+		
+		if(clipContent.length() > 0) {
+			final ClipboardContent content = new ClipboardContent();
+			content.putString(clipContent.toString());
+			Clipboard.getSystemClipboard().setContent(content);
+		}
 	}
 	
 	public void stopProcessLogging() {
