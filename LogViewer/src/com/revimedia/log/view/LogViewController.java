@@ -39,7 +39,9 @@ public class LogViewController implements FileTailerListener{
 	
 	private String mRegex;
 	
-	FileTailer mLogFileTailer;
+	private FileTailer mLogFileTailer;
+	
+	private boolean isRegexModeOff = true;
 	
 	@FXML
 	private void initialize() {
@@ -56,7 +58,9 @@ public class LogViewController implements FileTailerListener{
 	private void onRegexUpdate() {
 		System.out.println("LogViewTableViewController.onRegexUpdate()");
 		
-		if(mRegexFilterText.getText().isEmpty()) {
+		isRegexModeOff = mRegexFilterText.getText().isEmpty();
+		
+		if(isRegexModeOff) {
 			mLogs.clear();
 			if(!mLogsList.isEmpty()) {
 				mLogs.setAll(mLogsList);
@@ -85,6 +89,7 @@ public class LogViewController implements FileTailerListener{
 	public void loadLogData(File logFile) {
 		mRegexFilterText.clear();
 		mLogs.clear();
+		isRegexModeOff = true;
 		
 		mLogsList = new ArrayList<>();
 		
@@ -116,7 +121,15 @@ public class LogViewController implements FileTailerListener{
 		System.out.println( line );
 		LogEntry e = new LogEntry(line, mLogsList.size()+1);
 		mLogsList.add(e);
-		mLogs.add(e);
+		
+		
+		if(isRegexModeOff) {
+			mLogs.add(e);
+		} else {
+			if(e.getPayload() != null && !e.getPayload().isEmpty() && e.getPayload().matches(mRegex)) {
+				mLogs.add(e);
+			}
+		}
 	}
 
 	public void onCtrlC() {
