@@ -38,10 +38,10 @@ public class LogViewController implements FileTailerListener{
 	private ObservableList<LogEntry> mLogs = FXCollections.observableArrayList();
 	
 	private String mRegex;
+	private Pattern mRegexPattern;
+	private boolean isRegexModeOff = true;
 	
 	private FileTailer mLogFileTailer;
-	
-	private boolean isRegexModeOff = true;
 	
 	@FXML
 	private void initialize() {
@@ -52,6 +52,8 @@ public class LogViewController implements FileTailerListener{
 		mLineNumberColumn.setMinWidth(50);
 		
 		mLogTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		
+		mLogTable.setItems(mLogs);
 	}
 	
 	@FXML
@@ -61,6 +63,7 @@ public class LogViewController implements FileTailerListener{
 		isRegexModeOff = mRegexFilterText.getText().isEmpty();
 		
 		if(isRegexModeOff) {
+			mRegexPattern = null;
 			mLogs.clear();
 			if(!mLogsList.isEmpty()) {
 				mLogs.setAll(mLogsList);
@@ -71,15 +74,12 @@ public class LogViewController implements FileTailerListener{
 		if(mRegexFilterText.getText().equals(mRegex)) return;
 		
 		mRegex = "(" + mRegexFilterText.getText() + ")";
-		
-		System.out.println("LogViewTableViewController.onRegexUpdate(): Regex = " + mRegex);
-		
-		Pattern pattern = Pattern.compile(mRegex);
+		mRegexPattern = Pattern.compile(mRegex);
 		
 		mLogs.clear();
 		
 		for(LogEntry log: mLogsList) {
-			Matcher m = pattern.matcher(log.getPayload());
+			Matcher m = mRegexPattern.matcher(log.getPayload());
 			if(m.find()) {
 				mLogs.add(log);
 			}
@@ -87,13 +87,7 @@ public class LogViewController implements FileTailerListener{
 	}
 
 	public void loadLogData(File logFile) {
-		mRegexFilterText.clear();
-		mLogs.clear();
-		isRegexModeOff = true;
-		
-		mLogsList = new ArrayList<>();
-		
-		mLogTable.setItems(mLogs);
+		clearLogView();
 		
 		if(mLogFileTailer != null) {
 			mLogFileTailer.stopTailing();
@@ -109,7 +103,6 @@ public class LogViewController implements FileTailerListener{
 		mLogFileTailer.addLogFileTailerListener(this);
 		
 		mLogFileTailer.start();
-		
 	}
 
 	public ObservableList<LogEntry> getLogs() {
@@ -122,13 +115,8 @@ public class LogViewController implements FileTailerListener{
 		LogEntry e = new LogEntry(line, mLogsList.size()+1);
 		mLogsList.add(e);
 		
-		
-		if(isRegexModeOff) {
+		if(isRegexModeOff || mRegexPattern.matcher(e.getPayload()).find()) {
 			mLogs.add(e);
-		} else {
-			if(e.getPayload() != null && !e.getPayload().isEmpty() && e.getPayload().matches(mRegex)) {
-				mLogs.add(e);
-			}
 		}
 	}
 
@@ -155,5 +143,14 @@ public class LogViewController implements FileTailerListener{
 		if(mLogFileTailer != null) {
 			mLogFileTailer.stopTailing();
 		}
+	}
+	
+	private void clearLogView() {
+		mRegexFilterText.clear();
+		mLogs.clear();
+		isRegexModeOff = true;
+		mRegexPattern = null;
+		
+		mLogsList = new ArrayList<>();
 	}
 }
