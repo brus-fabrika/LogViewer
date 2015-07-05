@@ -139,7 +139,6 @@ public class LogViewController implements FileTailerListener{
 	}
 	
 	public void stopProcessLogging() {
-		System.out.println("Stop process the log");
 		if(mLogFileTailer != null) {
 			mLogFileTailer.stopTailing();
 		}

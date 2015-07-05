@@ -83,6 +83,7 @@ public class FileTailer extends Thread {
 	}
 
 	public void stopTailing() {
+		System.out.println("Stop process the file");
 		this.tailing = false;
 	}
 
