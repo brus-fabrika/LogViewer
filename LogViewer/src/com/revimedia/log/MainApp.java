@@ -23,6 +23,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import com.revimedia.log.util.Configuration;
+import com.revimedia.log.view.IViewController;
 import com.revimedia.log.view.LogViewController;
 import com.revimedia.log.view.RootLayoutController;
 
@@ -30,16 +31,19 @@ public class MainApp extends Application {
 
 	{
 		Logger log = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
+		log.setUseParentHandlers(false);
 		log.setLevel(Level.FINE);
 		Handler h = new ConsoleHandler();
 		h.setLevel(Level.FINE);
 		log.addHandler(h);
 	}
 	
+	private Logger log = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
+	
 	private Stage primaryStage;
 	private BorderPane rootLayout;
 
-	private LogViewController logViewController;
+	private IViewController logViewController;
 	private Configuration mAppConfig;
 	
 	/**
@@ -65,9 +69,31 @@ public class MainApp extends Application {
 		
 		initRootLayout();
 
-		showLogView();
+		if(getParameters().getRaw().contains("client")) {
+			showLogView();
+		} else if(getParameters().getRaw().contains("server")) {
+			showDebugView();
+		} else {
+
+		}
 		
-		this.primaryStage.setOnCloseRequest( event -> logViewController.stopProcessLogging() );
+	}
+
+	private void showDebugView() {
+		log.config("App is loaded in SERVER mode, show only debug info");
+		try {
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(getClass().getResource("view/DebugView.fxml"));
+			BorderPane debugView = (BorderPane) loader.load();
+
+			logViewController = loader.getController();
+			
+			// Set person overview into the center of root layout.
+			rootLayout.setCenter(debugView);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void initRootLayout() {
@@ -95,20 +121,22 @@ public class MainApp extends Application {
 			loader.setLocation(getClass().getResource("view/LogView.fxml"));
 			BorderPane logView = (BorderPane) loader.load();
 
-			logViewController = loader.getController();
+			LogViewController logViewCtrl = loader.getController();
 			
 			final KeyCombination keyComb1 = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN);
 			
 			logView.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
 				if (keyComb1.match(event)) {
-					logViewController.onCtrlC();
+					logViewCtrl.onCtrlC();
 				}
 			});
 			
-			
+			this.primaryStage.setOnCloseRequest( event -> logViewCtrl.stopProcessLogging() );
 			
 			// Set person overview into the center of root layout.
 			rootLayout.setCenter(logView);
+			
+			logViewController = logViewCtrl;
 
 		} catch (IOException e) {
 			e.printStackTrace();

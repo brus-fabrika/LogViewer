@@ -19,7 +19,7 @@ import com.revimedia.log.model.FileTailer;
 import com.revimedia.log.model.FileTailerListener;
 import com.revimedia.log.model.LogEntry;
 
-public class LogViewController implements FileTailerListener{
+public class LogViewController implements FileTailerListener, IViewController{
 
 	private static final int FILE_POOLING_INTERVAL = 5000;
 	@FXML
@@ -85,7 +85,8 @@ public class LogViewController implements FileTailerListener{
 			}
 		}
 	}
-
+	
+	@Override
 	public void loadLogData(File logFile) {
 		clearLogView();
 		
