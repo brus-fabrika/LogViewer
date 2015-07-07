@@ -42,6 +42,7 @@ public class LogViewController implements FileTailerListener, IViewController{
 	private boolean isRegexModeOff = true;
 	
 	private FileTailer mLogFileTailer;
+	private Thread mLogFileTailerThread;
 	
 	@FXML
 	private void initialize() {
@@ -93,7 +94,7 @@ public class LogViewController implements FileTailerListener, IViewController{
 		if(mLogFileTailer != null) {
 			mLogFileTailer.stopTailing();
 			try {
-				mLogFileTailer.join();
+				mLogFileTailerThread.join();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -103,7 +104,8 @@ public class LogViewController implements FileTailerListener, IViewController{
 		mLogFileTailer = new FileTailer(logFile, FILE_POOLING_INTERVAL, true);
 		mLogFileTailer.addLogFileTailerListener(this);
 		
-		mLogFileTailer.start();
+		mLogFileTailerThread = new Thread(mLogFileTailer);
+		mLogFileTailerThread.start();
 	}
 
 	public ObservableList<LogEntry> getLogs() {

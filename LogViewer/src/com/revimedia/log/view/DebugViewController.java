@@ -13,12 +13,12 @@ public class DebugViewController implements IViewController {
 	@Override
 	public void loadLogData(File logFile) {
 		log.info("File opened in SERVER mode");
-		openSocket();
+		openSocketForFile(logFile);
 	}
 
-	private void openSocket() {
+	private void openSocketForFile(File logFile) {
 		log.info("Start server socket thread");
-		Thread socketThread = new Thread(new LogServerSocket(), "ServerSocket");
+		Thread socketThread = new Thread(new LogServerSocket(logFile), "ServerSocket");
 		socketThread.start();
 	}
 	
