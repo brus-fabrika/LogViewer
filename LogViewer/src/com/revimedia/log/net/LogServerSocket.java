@@ -9,10 +9,10 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import com.revimedia.log.model.FileTailer;
-import com.revimedia.log.model.FileTailerListener;
+import com.revimedia.log.model.IFileTailerListener;
 import com.revimedia.log.util.Configuration;
 
-public class LogServerSocket implements Runnable, FileTailerListener {
+public class LogServerSocket implements Runnable, IFileTailerListener {
 	private static final long FILE_POOLING_INTERVAL =
 			Configuration.getInstance().getPropertyAsInt("pooling_interval", 4444);;
 
@@ -56,7 +56,7 @@ public class LogServerSocket implements Runnable, FileTailerListener {
 	}
 
 	@Override
-	public void onNewFileLine(String line) {
+	public void onFileUpdate(String line) {
 		mOutWriter.println(line);
 		
 	}

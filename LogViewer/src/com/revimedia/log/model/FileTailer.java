@@ -40,7 +40,7 @@ public class FileTailer implements Runnable {
 	/**
 	 * Set of listeners
 	 */
-	private Set<FileTailerListener> listeners = new HashSet<>();
+	private Set<IFileTailerListener> listeners = new HashSet<>();
 
 	/**
 	 * Creates a new log file tailer that tails an existing file and checks the
@@ -68,17 +68,17 @@ public class FileTailer implements Runnable {
 		this.sampleInterval = sampleInterval;
 	}
 
-	public void addLogFileTailerListener(FileTailerListener l) {
+	public void addLogFileTailerListener(IFileTailerListener l) {
 		this.listeners.add(l);
 	}
 
-	public void removeLogFileTailerListener(FileTailerListener l) {
+	public void removeLogFileTailerListener(IFileTailerListener l) {
 		this.listeners.remove(l);
 	}
 
 	protected void fireNewLogFileLine(String line) {
-		for (FileTailerListener l: this.listeners) {
-			l.onNewFileLine(line);
+		for (IFileTailerListener l: this.listeners) {
+			l.onFileUpdate(line);
 		}
 	}
 

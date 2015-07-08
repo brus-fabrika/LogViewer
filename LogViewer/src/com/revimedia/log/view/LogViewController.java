@@ -16,10 +16,10 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 
 import com.revimedia.log.model.FileTailer;
-import com.revimedia.log.model.FileTailerListener;
+import com.revimedia.log.model.IFileTailerListener;
 import com.revimedia.log.model.LogEntry;
 
-public class LogViewController implements FileTailerListener, IViewController{
+public class LogViewController implements IFileTailerListener, IViewController{
 
 	private static final int FILE_POOLING_INTERVAL = 5000;
 	@FXML
@@ -113,7 +113,7 @@ public class LogViewController implements FileTailerListener, IViewController{
 	}
 
 	@Override
-	public void onNewFileLine(String line) {
+	public void onFileUpdate(String line) {
 		System.out.println( line );
 		LogEntry e = new LogEntry(line, mLogsList.size()+1);
 		mLogsList.add(e);
