@@ -10,9 +10,11 @@ import java.util.logging.Logger;
 
 import com.revimedia.log.model.FileTailer;
 import com.revimedia.log.model.FileTailerListener;
+import com.revimedia.log.util.Configuration;
 
 public class LogServerSocket implements Runnable, FileTailerListener {
-	private static final long FILE_POOLING_INTERVAL = 5000;
+	private static final long FILE_POOLING_INTERVAL =
+			Configuration.getInstance().getPropertyAsInt("pooling_interval", 4444);;
 
 	private Logger log = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
@@ -30,8 +32,9 @@ public class LogServerSocket implements Runnable, FileTailerListener {
 	
 	@Override
 	public void run() {
-		log.info("Try to create socket");
-		try (ServerSocket serverSocket = new ServerSocket(4444);) {
+		int portNum = Configuration.getInstance().getPropertyAsInt("default_port", 4444);
+		log.info("Try to create socket on port: ");
+		try (ServerSocket serverSocket = new ServerSocket(portNum);) {
 			Socket clientSocket = serverSocket.accept();
 			log.info("Socket connected in SERVER mode");
 			
@@ -48,7 +51,6 @@ public class LogServerSocket implements Runnable, FileTailerListener {
 			mOutWriter.flush();
 			clientSocket.close();
 		} catch (IOException | InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

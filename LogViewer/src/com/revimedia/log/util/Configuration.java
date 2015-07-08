@@ -41,7 +41,15 @@ public class Configuration {
 		}
 	}
 	
-	public String getPropertyValue(String key) {
+	public String getProperty(String key) {
 		return mProperties.getProperty(key, "");
+	}
+
+	public int getPropertyAsInt(String key, int defaultValue) {
+		
+		String intKeyValue = mProperties.getProperty(key, "");
+		if(intKeyValue.isEmpty()) return defaultValue;
+
+		return Integer.parseInt(intKeyValue);
 	}
 }

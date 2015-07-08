@@ -56,9 +56,9 @@ public class MainApp extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
-		this.primaryStage.setTitle(mAppConfig.getPropertyValue("app.name"));
+		this.primaryStage.setTitle(mAppConfig.getProperty("app.name"));
 		String iconPath = getClass().getClassLoader().getResource("images").toString();
-		this.primaryStage.getIcons().add(new Image(iconPath + File.separator + mAppConfig.getPropertyValue("app.icon")));
+		this.primaryStage.getIcons().add(new Image(iconPath + File.separator + mAppConfig.getProperty("app.icon")));
 		
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		double width = screenSize.getWidth();
@@ -153,7 +153,7 @@ public class MainApp extends Application {
 
 	public void loadLogFile() {
 		FileChooser fileChooser = new FileChooser();
-		fileChooser.setInitialDirectory(new File(mAppConfig.getPropertyValue("default_path")));
+		fileChooser.setInitialDirectory(new File(mAppConfig.getProperty("default_path")));
 		File logFile = fileChooser.showOpenDialog(primaryStage);
 		if(logFile != null) {
 			logViewController.loadLogData(logFile);
