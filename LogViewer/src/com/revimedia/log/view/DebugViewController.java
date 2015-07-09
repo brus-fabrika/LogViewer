@@ -9,6 +9,8 @@ import com.revimedia.log.net.LogServerSocket;
 
 public class DebugViewController implements IViewController {
 	private Logger log = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
+	private Thread mSocketThread;
+	private LogServerSocket mLogServer;
 
 	@Override
 	public void loadLogData(File logFile) {
@@ -18,8 +20,14 @@ public class DebugViewController implements IViewController {
 
 	private void openSocketForFile(File logFile) {
 		log.info("Start server socket thread");
-		Thread socketThread = new Thread(new LogServerSocket(logFile), "ServerSocket");
-		socketThread.start();
+		mLogServer = new LogServerSocket(logFile);
+		mSocketThread = new Thread(mLogServer, "ServerSocket");
+		mSocketThread.start();
+	}
+
+	@Override
+	public void stopProcessLogging() {
+		mLogServer.stopServer();
 	}
 	
 }

@@ -2,29 +2,23 @@ package com.revimedia.log.net;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-import com.revimedia.log.model.FileTailer;
-import com.revimedia.log.model.IFileTailerListener;
 import com.revimedia.log.util.Configuration;
 
-public class LogServerSocket implements Runnable, IFileTailerListener {
-	private static final long FILE_POOLING_INTERVAL =
-			Configuration.getInstance().getPropertyAsInt("pooling_interval", 4444);;
-
-	private Logger log = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
+public class LogServerSocket implements Runnable {
+	final private Logger log = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	private File mLogFile;
 
-	private FileTailer mLogFileTailer;
+	ArrayList<ClientLogPooler> mClients = new ArrayList<>();
 
-	private Thread mLogFileTailerThread;
-
-	private PrintWriter mOutWriter;
+	private boolean isServerActivated = true;
 	
 	public LogServerSocket(File logFile){
 		this.mLogFile = logFile;
@@ -32,33 +26,23 @@ public class LogServerSocket implements Runnable, IFileTailerListener {
 	
 	@Override
 	public void run() {
-		int portNum = Configuration.getInstance().getPropertyAsInt("default_port", 4444);
-		log.info("Try to create socket on port: ");
+		int portNum = Configuration.getInstance().getPropertyAsInt("port", 4444);
+		log.info("Start log server on port: " + portNum);
 		try (ServerSocket serverSocket = new ServerSocket(portNum);) {
-			Socket clientSocket = serverSocket.accept();
-			log.info("Socket connected in SERVER mode");
-			
-			mOutWriter = new PrintWriter(clientSocket.getOutputStream(), true);
-			
-			mLogFileTailer = new FileTailer(mLogFile, FILE_POOLING_INTERVAL, true);
-			mLogFileTailer.addLogFileTailerListener(this);
-			
-			mLogFileTailerThread = new Thread(mLogFileTailer);
-			mLogFileTailerThread.start();
-			
-			mLogFileTailerThread.join();
-			
-			mOutWriter.flush();
-			clientSocket.close();
-		} catch (IOException | InterruptedException e) {
-			e.printStackTrace();
+			while(isServerActivated ) {
+				Socket clientSocket = serverSocket.accept();
+				log.info("Client socket connected: " + clientSocket.getInetAddress());
+				
+				mClients.add(new ClientLogPooler(clientSocket, mLogFile));
+			}
+		} catch (IOException e) {
+			log.severe(Arrays.toString(e.getStackTrace()));
 		}
 	}
 
-	@Override
-	public void onFileUpdate(String line) {
-		mOutWriter.println(line);
-		
+	public void stopServer() {
+		isServerActivated = false; // TODO: this will not work as accept is a blocking call.
+									// so we can never ever go out from waiting for socket loop
 	}
-
+	
 }

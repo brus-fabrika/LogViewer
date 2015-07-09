@@ -88,6 +88,8 @@ public class MainApp extends Application {
 
 			logViewController = loader.getController();
 			
+			this.primaryStage.setOnCloseRequest( event -> logViewController.stopProcessLogging() );
+			
 			// Set person overview into the center of root layout.
 			rootLayout.setCenter(debugView);
 

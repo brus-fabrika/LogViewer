@@ -141,6 +141,7 @@ public class LogViewController implements IFileTailerListener, IViewController{
 		}
 	}
 	
+	@Override
 	public void stopProcessLogging() {
 		if(mLogFileTailer != null) {
 			mLogFileTailer.stopTailing();

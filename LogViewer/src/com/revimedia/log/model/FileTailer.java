@@ -14,7 +14,7 @@ import java.util.Set;
  * results, build meaningful sets of data, etc. This tailer simply fires
  * notifications containing new log file lines, one at a time.
  */
-public class FileTailer implements Runnable {
+public class FileTailer extends Thread {
 	/**
 	 * How frequently to check for file changes; defaults to 5 seconds
 	 */
