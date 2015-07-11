@@ -156,4 +156,10 @@ public class LogViewController implements IFileTailerListener, IViewController{
 		
 		mLogsList = new ArrayList<>();
 	}
+
+	@Override
+	public boolean loadLogData(String host, int port) {
+		// TODO: connect to server with host:port
+		return false;
+	}
 }
