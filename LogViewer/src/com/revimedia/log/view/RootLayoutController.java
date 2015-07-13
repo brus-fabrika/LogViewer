@@ -1,7 +1,7 @@
 package com.revimedia.log.view;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 
@@ -23,23 +23,16 @@ public class RootLayoutController {
 	}
 	
 	@FXML
-	private void handleConnectMenu() {
+	private void handleConnectMenu(ActionEvent event) {
+		MenuItem con = (MenuItem) event.getSource();
 		if(isServerConnected) {
 			if(mainApp.serverDisconnect()) {
 				isServerConnected = false;
-				// TODO: change menu label to connect
-				Menu cons = mMainMenu.getMenus().get(1);
-				MenuItem con = cons.getItems().get(0);
-				
 				con.setText("Connect");
-				
 			}
 		} else {
 			if(mainApp.serverConnect()) {
 				isServerConnected = true;
-				Menu cons = mMainMenu.getMenus().get(1);
-				MenuItem con = cons.getItems().get(0);
-				
 				con.setText("Disconnect");
 			}
 		}
