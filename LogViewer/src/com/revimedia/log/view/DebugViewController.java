@@ -29,5 +29,11 @@ public class DebugViewController implements IViewController {
 	public void stopProcessLogging() {
 		mLogServer.stopServer();
 	}
+
+	@Override
+	public boolean loadLogData(String host, int port) {
+		log.info("connect to server with "+ host +":" + port);
+		return false;
+	}
 	
 }

@@ -164,8 +164,14 @@ public class MainApp extends Application {
 	}
 
 	public boolean serverConnect() {
+		log.info("connect");
 		String host = mAppConfig.getProperty("host");
 		int port = mAppConfig.getPropertyAsInt("port", 4444);
 		return logViewController.loadLogData(host, port);
+	}
+
+	public boolean serverDisconnect() {
+		log.info("disconnect");
+		return false;
 	}
 }

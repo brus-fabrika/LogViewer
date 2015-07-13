@@ -2,6 +2,8 @@ package com.revimedia.log.view;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,6 +23,8 @@ import com.revimedia.log.model.LogEntry;
 
 public class LogViewController implements IFileTailerListener, IViewController{
 
+	private Logger log = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
+	
 	private static final int FILE_POOLING_INTERVAL = 5000;
 	@FXML
 	private TableView<LogEntry> mLogTable;
@@ -160,6 +164,7 @@ public class LogViewController implements IFileTailerListener, IViewController{
 	@Override
 	public boolean loadLogData(String host, int port) {
 		// TODO: connect to server with host:port
+		log.info("connect to server with "+ host +":" + port);
 		return false;
 	}
 }
