@@ -56,7 +56,6 @@ public class MainApp extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
-		this.primaryStage.setTitle(mAppConfig.getProperty("app.name"));
 		String iconPath = getClass().getClassLoader().getResource("images").toString();
 		this.primaryStage.getIcons().add(new Image(iconPath + File.separator + mAppConfig.getProperty("app.icon")));
 		
@@ -70,8 +69,10 @@ public class MainApp extends Application {
 		initRootLayout();
 
 		if(getParameters().getRaw().contains("client")) {
+			this.primaryStage.setTitle(mAppConfig.getProperty("app.name") + " - Client");
 			showLogView();
 		} else if(getParameters().getRaw().contains("server")) {
+			this.primaryStage.setTitle(mAppConfig.getProperty("app.name") + " - Server");
 			showDebugView();
 		} else {
 
@@ -172,6 +173,7 @@ public class MainApp extends Application {
 
 	public boolean serverDisconnect() {
 		log.info("disconnect");
-		return false;
+		logViewController.stopProcessLogging();
+		return true;
 	}
 }

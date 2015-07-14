@@ -1,10 +1,6 @@
 package com.revimedia.log.view;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -24,6 +20,7 @@ import javafx.scene.input.ClipboardContent;
 import com.revimedia.log.model.FileTailer;
 import com.revimedia.log.model.IFileTailerListener;
 import com.revimedia.log.model.LogEntry;
+import com.revimedia.log.net.LogClientSocket;
 
 public class LogViewController implements IFileTailerListener, IViewController{
 
@@ -51,6 +48,8 @@ public class LogViewController implements IFileTailerListener, IViewController{
 	
 	private FileTailer mLogFileTailer;
 	private Thread mLogFileTailerThread;
+
+	private LogClientSocket mClientSocket;
 	
 	@FXML
 	private void initialize() {
@@ -154,6 +153,9 @@ public class LogViewController implements IFileTailerListener, IViewController{
 		if(mLogFileTailer != null) {
 			mLogFileTailer.stopTailing();
 		}
+		if(mClientSocket != null) {
+			mClientSocket.disconnect();
+		}
 	}
 	
 	private void clearLogView() {
@@ -167,25 +169,18 @@ public class LogViewController implements IFileTailerListener, IViewController{
 
 	@Override
 	public boolean loadLogData(String host, int port) {
-		// TODO: connect to server with host:port
-		log.info("connect to server with "+ host +":" + port);
-		new Thread( () -> {
-		try {
-			Socket clientSocket = new Socket(host, port);
-			log.info("connection to server with "+ host +":" + port + " OK");
-			BufferedReader bis = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-			String line = bis.readLine();
-			while(line != null) {
-				System.out.println(line);
-				line = bis.readLine();
-				this.onFileUpdate(line);
-			}
-			clientSocket.close();
-			log.info("connection to server with "+ host +":" + port + " CLOSED");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}}).start();
+		clearLogView();
 		
-		return true;
+		log.info("connect to server with "+ host +":" + port);
+		
+		mClientSocket = new LogClientSocket(host, port, this);
+		boolean isConnected = mClientSocket.tryConnect();
+		if(isConnected) {
+			new Thread(mClientSocket).start();
+		} else {
+			log.severe("connect to server with "+ host +":" + port + " FAILED");
+		}
+		
+		return isConnected;
 	}
 }

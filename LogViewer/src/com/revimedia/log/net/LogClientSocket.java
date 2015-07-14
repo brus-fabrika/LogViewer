@@ -1,44 +1,64 @@
 package com.revimedia.log.net;
 
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.ServerSocket;
+import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-import com.revimedia.log.util.Configuration;
+import com.revimedia.log.model.IFileTailerListener;
 
 public class LogClientSocket implements Runnable {
 	final private Logger log = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
-	final private int mPortNum = Configuration.getInstance().getPropertyAsInt("port", 4444);
+//	final private int mPortNum = Configuration.getInstance().getPropertyAsInt("port", 4444);
 	
-	private File mLogFile;
-
-	ArrayList<ClientLogPooler> mClients = new ArrayList<>();
+	private Socket mClientSocket;
+	private String mHost;
+	private int mPortNum;
 	
-	ServerSocket mServerSocket;
+	private IFileTailerListener mLogListener;
+	
+	
+	private boolean isConnected = false;
 
-	private boolean isServerActivated = true;
+	private BufferedReader mSocketReader;
 
-	public LogClientSocket(File logFile){
-		this.mLogFile = logFile;
+	public LogClientSocket(String host, int port, IFileTailerListener logTailer){
+		mHost = host;
+		mPortNum = port;
+		mLogListener = logTailer;
+	}
+	
+	public boolean tryConnect() {
+		log.info("Start log server on port: " + mPortNum);
+		isConnected = false;
+		try {
+			mClientSocket = new Socket(mHost, mPortNum);
+			isConnected = true;
+			log.info("connection to server with "+ mHost +":" + mPortNum + " OK");
+			mSocketReader = new BufferedReader(new InputStreamReader(mClientSocket.getInputStream()));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return isConnected;
 	}
 	
 	@Override
 	public void run() {
-		log.info("Start log server on port: " + mPortNum);
-		
+		if(!isConnected) {
+			log.warning("No connection to server, cannot start client");
+			return;
+		}
+
 		try {
-			mServerSocket = new ServerSocket(mPortNum);
-			while(isServerActivated) {
-				Socket clientSocket = mServerSocket.accept();
-				log.info("Client socket connected: " + clientSocket.getInetAddress());
-				
-				mClients.add(new ClientLogPooler(clientSocket, mLogFile));
+			String line = mSocketReader.readLine();
+			while(line != null) {
+				System.out.println(line);
+				line = mSocketReader.readLine();
+				mLogListener.onFileUpdate(line);
 			}
 		} catch(SocketException e) {
 			log.warning("Server interrupted");
@@ -47,13 +67,17 @@ public class LogClientSocket implements Runnable {
 		}
 	}
 
-	public void stopServer() {
-		isServerActivated = false;
-		if(mServerSocket != null) {
+	public void disconnect() {
+		if(!isConnected) {
+			return;
+		}
+		
+		if(mClientSocket != null) {
 			try {
-				mServerSocket.close();
-			} catch(IOException ignore) {
-				log.severe(Arrays.toString(ignore.getStackTrace()));
+				mClientSocket.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 	}
