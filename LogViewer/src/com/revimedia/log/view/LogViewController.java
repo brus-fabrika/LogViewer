@@ -1,6 +1,10 @@
 package com.revimedia.log.view;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -165,6 +169,23 @@ public class LogViewController implements IFileTailerListener, IViewController{
 	public boolean loadLogData(String host, int port) {
 		// TODO: connect to server with host:port
 		log.info("connect to server with "+ host +":" + port);
-		return false;
+		new Thread( () -> {
+		try {
+			Socket clientSocket = new Socket(host, port);
+			log.info("connection to server with "+ host +":" + port + " OK");
+			BufferedReader bis = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+			String line = bis.readLine();
+			while(line != null) {
+				System.out.println(line);
+				line = bis.readLine();
+				this.onFileUpdate(line);
+			}
+			clientSocket.close();
+			log.info("connection to server with "+ host +":" + port + " CLOSED");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}}).start();
+		
+		return true;
 	}
 }
