@@ -75,9 +75,7 @@ public class MainApp extends Application {
 			this.primaryStage.setTitle(mAppConfig.getProperty("app.name") + " - Server");
 			showDebugView();
 		} else {
-
 		}
-		
 	}
 
 	private void showDebugView() {
@@ -161,7 +159,6 @@ public class MainApp extends Application {
 		if(logFile != null) {
 			logViewController.loadLogData(logFile);
 		}
-		
 	}
 
 	public boolean serverConnect() {
