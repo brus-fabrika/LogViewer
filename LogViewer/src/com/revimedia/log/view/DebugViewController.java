@@ -32,8 +32,12 @@ public class DebugViewController implements IViewController {
 
 	@Override
 	public boolean loadLogData(String host, int port) {
-		log.info("connect to server with "+ host +":" + port);
-		return false;
+		log.info("try to start server");
+		mLogServer = new LogServerSocket();
+		mSocketThread = new Thread(mLogServer, "ServerSocket");
+		mSocketThread.start();
+		
+		return true;
 	}
 	
 }

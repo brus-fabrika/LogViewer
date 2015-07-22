@@ -63,8 +63,14 @@ public class MainApp extends Application {
 		double width = screenSize.getWidth();
 		double height = screenSize.getHeight();
 		
-		this.primaryStage.setWidth(width/1.5);
-		this.primaryStage.setHeight(height/1.5);
+		
+		if(getParameters().getRaw().contains("server")) {
+			this.primaryStage.setWidth(width/4);
+			this.primaryStage.setHeight(height/4);
+		} else {
+			this.primaryStage.setWidth(width/1.5);
+			this.primaryStage.setHeight(height/1.5);
+		}
 		
 		initRootLayout();
 

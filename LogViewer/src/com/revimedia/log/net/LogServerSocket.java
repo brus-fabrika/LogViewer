@@ -28,6 +28,10 @@ public class LogServerSocket implements Runnable {
 		this.mLogFile = logFile;
 	}
 	
+	public LogServerSocket() {
+		
+	}
+
 	@Override
 	public void run() {
 		log.info("Start log server on port: " + mPortNum);
@@ -37,8 +41,6 @@ public class LogServerSocket implements Runnable {
 			while(isServerActivated) {
 				Socket clientSocket = mServerSocket.accept();
 				log.info("Client socket connected: " + clientSocket.getInetAddress());
-				
-				//mClients.add(new ClientLogPooler(clientSocket, mLogFile));
 				mClients.add(new ClientLogPooler(clientSocket));
 			}
 		} catch(SocketException e) {

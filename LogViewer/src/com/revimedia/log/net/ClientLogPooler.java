@@ -16,7 +16,6 @@ public class ClientLogPooler implements IFileTailerListener{
 
 	final private Socket mClientSocket;
 	private FileTailer mLogFileTailer;
-//	private PrintWriter mOutWriter;
 	private ObjectOutputStream mOutWriter;
 	
 	private LxpInstanceList mInstanceList = new LxpInstanceList(new File("D:\\ttt"));
@@ -26,10 +25,10 @@ public class ClientLogPooler implements IFileTailerListener{
 		mLogFileTailer = FileTailerPool.getTailerForFile(logFile);
 		
 		try {
-//			mOutWriter = new PrintWriter(mClientSocket.getOutputStream(), true);
 			mOutWriter = new ObjectOutputStream(mClientSocket.getOutputStream());
 			mLogFileTailer.addLogFileTailerListener(this);
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -39,8 +38,6 @@ public class ClientLogPooler implements IFileTailerListener{
 		mInstanceList.scan();
 		
 		try {
-			//mOutWriter = new PrintWriter(mClientSocket.getOutputStream(), true);
-//			ObjectOutputStream out = new ObjectOutputStream(mClientSocket.getOutputStream());
 			mOutWriter = new ObjectOutputStream(mClientSocket.getOutputStream());
 			mOutWriter.writeObject(mInstanceList);
 			BufferedReader in = new BufferedReader(new InputStreamReader(mClientSocket.getInputStream()));
@@ -52,23 +49,23 @@ public class ClientLogPooler implements IFileTailerListener{
 			mLogFileTailer.addLogFileTailerListener(this);
 		
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
 	public void close() {
-//		mOutWriter.flush();
 		try {
 			mOutWriter.flush();
 			mClientSocket.close();
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
 	@Override
 	public void onFileUpdate(String line) {
-		System.out.println(line);
 		try {
 			mOutWriter.writeObject(line + "\n");
 		} catch (IOException e) {
