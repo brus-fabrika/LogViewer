@@ -88,7 +88,7 @@ public class FileTailer extends Thread {
 	}
 
 	public void run() {
-		System.out.println("FileTailer thread started for file: " + logfile.getName());
+		System.out.println("FileTailer thread started for file: " + logfile.getAbsolutePath());
 		// The file pointer keeps track of where we are in the file
 		long filePointer = 0;
 

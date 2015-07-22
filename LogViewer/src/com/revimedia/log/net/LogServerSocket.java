@@ -38,7 +38,8 @@ public class LogServerSocket implements Runnable {
 				Socket clientSocket = mServerSocket.accept();
 				log.info("Client socket connected: " + clientSocket.getInetAddress());
 				
-				mClients.add(new ClientLogPooler(clientSocket, mLogFile));
+				//mClients.add(new ClientLogPooler(clientSocket, mLogFile));
+				mClients.add(new ClientLogPooler(clientSocket));
 			}
 		} catch(SocketException e) {
 			log.warning("Server interrupted");
