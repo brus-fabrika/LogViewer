@@ -11,6 +11,7 @@ import com.revimedia.log.model.FileTailer;
 import com.revimedia.log.model.FileTailerPool;
 import com.revimedia.log.model.IFileTailerListener;
 import com.revimedia.log.model.LxpInstanceList;
+import com.revimedia.log.util.Configuration;
 
 public class ClientLogPooler implements IFileTailerListener{
 
@@ -18,7 +19,7 @@ public class ClientLogPooler implements IFileTailerListener{
 	private FileTailer mLogFileTailer;
 	private ObjectOutputStream mOutWriter;
 	
-	private LxpInstanceList mInstanceList = new LxpInstanceList(new File("D:\\ttt"));
+	private LxpInstanceList mInstanceList = new LxpInstanceList(new File(Configuration.getInstance().getProperty("default_path")));
 	
 	public ClientLogPooler(Socket clientSocket, File logFile) {
 		mClientSocket = clientSocket;

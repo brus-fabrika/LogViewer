@@ -64,7 +64,6 @@ public class LogClientSocket implements Runnable {
 			mClientSocket.getOutputStream().write(fileToListen.getBytes());
 			String line = (String) mSocketReader.readObject();
 			while(line != null) {
-				System.out.println(line);
 				line = (String) mSocketReader.readObject();
 				mLogListener.onFileUpdate(line);
 			}
@@ -80,7 +79,7 @@ public class LogClientSocket implements Runnable {
 
 	private String getLxpFile(LxpInstanceList lxps) {
 		
-		String lxpName = Configuration.getInstance().getProperty("default_instance"); 
+		String lxpName = Configuration.getInstance().getProperty("default_instance");
 		
 		String[] instanceFileList = (String[]) lxps.getInstanceFiles(lxpName).toArray(new String[0]);
 		int mostRecentValue = -1;
