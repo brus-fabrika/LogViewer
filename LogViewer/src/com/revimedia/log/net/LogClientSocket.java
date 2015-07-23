@@ -90,7 +90,7 @@ public class LogClientSocket implements Runnable {
 
 	private String getLxpFile(LxpInstanceList lxps) {
 		
-		String lxpName = Configuration.getInstance().getProperty("default_instance"); 
+		String lxpName = Configuration.getInstance().getProperty("default_instance");
 		
 		if(lxps.getInstanceFiles(lxpName) == null) {
 			log.severe("No logs found for lxp instance " + lxpName);
