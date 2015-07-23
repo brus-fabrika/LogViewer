@@ -57,14 +57,24 @@ public class LogClientSocket implements Runnable {
 		try {
 			LxpInstanceList lxps = (LxpInstanceList) mSocketReader.readObject();
 			
-			String fileToListen = getLxpFile(lxps) + "\n";
+			if(lxps.isEmpty()) {
+				log.severe("No LXP log files found on server");
+				return;
+			}
+			
+			String fileToListen = getLxpFile(lxps);
+			
+			if(fileToListen.isEmpty()) {
+				log.severe("No LXP instance <...> log files found on server");
+				return;
+			}
 			
 			log.info("Client tries to connect to file " + fileToListen);
 			
+			fileToListen += "\n";
 			mClientSocket.getOutputStream().write(fileToListen.getBytes());
 			String line = (String) mSocketReader.readObject();
 			while(line != null) {
-				System.out.println(line);
 				line = (String) mSocketReader.readObject();
 				mLogListener.onFileUpdate(line);
 			}
@@ -81,6 +91,11 @@ public class LogClientSocket implements Runnable {
 	private String getLxpFile(LxpInstanceList lxps) {
 		
 		String lxpName = Configuration.getInstance().getProperty("default_instance"); 
+		
+		if(lxps.getInstanceFiles(lxpName) == null) {
+			log.severe("No logs found for lxp instance " + lxpName);
+			return "";
+		}
 		
 		String[] instanceFileList = (String[]) lxps.getInstanceFiles(lxpName).toArray(new String[0]);
 		int mostRecentValue = -1;

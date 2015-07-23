@@ -45,8 +45,12 @@ public class ClientLogPooler implements IFileTailerListener{
 			
 			System.out.println("Filename received from client: " + fileToListen);
 			
-			mLogFileTailer = FileTailerPool.getTailerForFile(new File(fileToListen));
-			mLogFileTailer.addLogFileTailerListener(this);
+			if(!(fileToListen == null || fileToListen.isEmpty())) {
+				mLogFileTailer = FileTailerPool.getTailerForFile(new File(fileToListen));
+				mLogFileTailer.addLogFileTailerListener(this);
+			} else {
+				// TODO: add exception here as we don't want to have this object anymore
+			}
 		
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

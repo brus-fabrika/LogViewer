@@ -9,6 +9,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.revimedia.log.util.Configuration;
+
 public class LxpInstanceList implements Serializable {
 	private static final long serialVersionUID = 3865756189694456388L;
 
@@ -16,10 +18,14 @@ public class LxpInstanceList implements Serializable {
 	private File mRootDir;
 	
 	public LxpInstanceList() {
-		
+		if(mRootDir == null) {
+			String rootFolder = Configuration.getInstance().getProperty("default_path");
+			mRootDir = new File(rootFolder);
+		}
 	}
 	
 	public LxpInstanceList(File rootDir) {
+		this();
 		mRootDir = rootDir;
 		scan();
 	}
@@ -46,6 +52,10 @@ public class LxpInstanceList implements Serializable {
 				}
 			}
 		}
+	}
+	
+	public boolean isEmpty() {
+		return mInstances.isEmpty();
 	}
 	
 	public Set<String> getInstances() {

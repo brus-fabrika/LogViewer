@@ -68,8 +68,8 @@ public class MainApp extends Application {
 			this.primaryStage.setWidth(width/4);
 			this.primaryStage.setHeight(height/4);
 		} else {
-			this.primaryStage.setWidth(width/1.5);
-			this.primaryStage.setHeight(height/1.5);
+			this.primaryStage.setWidth(width/2);
+			this.primaryStage.setHeight(height/2);
 		}
 		
 		initRootLayout();
