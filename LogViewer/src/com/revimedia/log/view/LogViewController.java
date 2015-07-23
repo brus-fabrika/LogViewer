@@ -121,7 +121,6 @@ public class LogViewController implements IFileTailerListener, IViewController{
 
 	@Override
 	public void onFileUpdate(String line) {
-		System.out.println( line );
 		LogEntry e = new LogEntry(line, mLogsList.size()+1);
 		mLogsList.add(e);
 		
