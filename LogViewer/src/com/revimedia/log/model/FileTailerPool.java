@@ -16,7 +16,7 @@ public class FileTailerPool {
 	private void addFileTailerForFile(File logFile) {
 		if(mTailerPool.containsKey(logFile.getAbsolutePath())) return;
 		
-		FileTailer fileTailer = new FileTailer(logFile, FILE_POOLING_INTERVAL, true);
+		FileTailer fileTailer = new FileTailer(logFile, FILE_POOLING_INTERVAL, false);
 		fileTailer.start();
 		
 		mTailerPool.put(logFile.getAbsolutePath(), fileTailer);

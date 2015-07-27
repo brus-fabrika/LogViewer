@@ -42,6 +42,8 @@ public class FileTailer extends Thread {
 	 */
 	private Set<IFileTailerListener> listeners = new HashSet<>();
 
+	private long mMostRecentLinesCount = 50*255;
+
 	/**
 	 * Creates a new log file tailer that tails an existing file and checks the
 	 * file for updates every 5000ms
@@ -66,6 +68,7 @@ public class FileTailer extends Thread {
 	public FileTailer(File file, long sampleInterval, boolean startAtBeginning) {
 		this.logfile = file;
 		this.sampleInterval = sampleInterval;
+		this.startAtBeginning = startAtBeginning;
 	}
 
 	public void addLogFileTailerListener(IFileTailerListener l) {
@@ -93,10 +96,10 @@ public class FileTailer extends Thread {
 		long filePointer = 0;
 
 		// Determine start point
-		if (this.startAtBeginning) {
-			filePointer = 0;
-		} else {
-			filePointer = this.logfile.length();
+		if (!this.startAtBeginning) {
+			filePointer = this.logfile.length() > mMostRecentLinesCount
+					? this.logfile.length() - mMostRecentLinesCount 
+					: 0;
 		}
 
 		try {
