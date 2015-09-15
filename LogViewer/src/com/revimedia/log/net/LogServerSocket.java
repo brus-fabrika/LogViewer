@@ -16,7 +16,7 @@ public class LogServerSocket implements Runnable {
 	final private Logger log = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
 	final private int mPortNum = Configuration.getInstance().getPropertyAsInt("port", 4444);
 	
-	private File mLogFile;
+	//private File mLogFile;
 
 	ArrayList<ClientLogPooler> mClients = new ArrayList<>();
 	
@@ -24,9 +24,9 @@ public class LogServerSocket implements Runnable {
 
 	private boolean isServerActivated = true;
 
-	public LogServerSocket(File logFile){
-		this.mLogFile = logFile;
-	}
+//	public LogServerSocket(File logFile){
+//		this.mLogFile = logFile;
+//	}
 	
 	public LogServerSocket() {
 		

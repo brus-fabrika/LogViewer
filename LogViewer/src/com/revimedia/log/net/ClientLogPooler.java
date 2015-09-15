@@ -24,38 +24,42 @@ public class ClientLogPooler implements IFileTailerListener{
 		mClientSocket = clientSocket;
 		mLogFileTailer = FileTailerPool.getTailerForFile(logFile);
 		
-		try {
-			mOutWriter = new ObjectOutputStream(mClientSocket.getOutputStream());
-			mLogFileTailer.addLogFileTailerListener(this);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		FileTailerPool.addNewListener(this);
+		
+//		try {
+//			mOutWriter = new ObjectOutputStream(mClientSocket.getOutputStream());
+//			mLogFileTailer.addLogFileTailerListener(this);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 	
 	public ClientLogPooler(Socket clientSocket) {
 		mClientSocket = clientSocket;
 		mInstanceList.scan();
 		
-		try {
-			mOutWriter = new ObjectOutputStream(mClientSocket.getOutputStream());
-			mOutWriter.writeObject(mInstanceList);
-			BufferedReader in = new BufferedReader(new InputStreamReader(mClientSocket.getInputStream()));
-			String fileToListen = in. readLine();
-			
-			System.out.println("Filename received from client: " + fileToListen);
-			
-			if(!(fileToListen == null || fileToListen.isEmpty())) {
-				mLogFileTailer = FileTailerPool.getTailerForFile(new File(fileToListen));
-				mLogFileTailer.addLogFileTailerListener(this);
-			} else {
-				// TODO: add exception here as we don't want to have this object anymore
-			}
+		FileTailerPool.addNewListener(this);
 		
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			mOutWriter = new ObjectOutputStream(mClientSocket.getOutputStream());
+//			mOutWriter.writeObject(mInstanceList);
+//			BufferedReader in = new BufferedReader(new InputStreamReader(mClientSocket.getInputStream()));
+//			String fileToListen = in. readLine();
+			
+//			System.out.println("Filename received from client: " + fileToListen);
+//			
+//			if(!(fileToListen == null || fileToListen.isEmpty())) {
+//				mLogFileTailer = FileTailerPool.getTailerForFile(new File(fileToListen));
+//				mLogFileTailer.addLogFileTailerListener(this);
+//			} else {
+//				// TODO: add exception here as we don't want to have this object anymore
+//			}
+//		
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 	
 	public void close() {
