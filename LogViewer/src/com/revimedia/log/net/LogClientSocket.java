@@ -55,24 +55,24 @@ public class LogClientSocket implements Runnable {
 		}
 
 		try {
-			LxpInstanceList lxps = (LxpInstanceList) mSocketReader.readObject();
-			
-			if(lxps.isEmpty()) {
-				log.severe("No LXP log files found on server");
-				return;
-			}
-			
-			String fileToListen = getLxpFile(lxps);
-			
-			if(fileToListen.isEmpty()) {
-				log.severe("No LXP instance <...> log files found on server");
-				return;
-			}
-			
-			log.info("Client tries to connect to file " + fileToListen);
-			
-			fileToListen += "\n";
-			mClientSocket.getOutputStream().write(fileToListen.getBytes());
+//			LxpInstanceList lxps = (LxpInstanceList) mSocketReader.readObject();
+//			
+//			if(lxps.isEmpty()) {
+//				log.severe("No LXP log files found on server");
+//				return;
+//			}
+//			
+//			String fileToListen = getLxpFile(lxps);
+//			
+//			if(fileToListen.isEmpty()) {
+//				log.severe("No LXP instance <...> log files found on server");
+//				return;
+//			}
+//			
+//			log.info("Client tries to connect to file " + fileToListen);
+//			
+//			fileToListen += "\n";
+//			mClientSocket.getOutputStream().write(fileToListen.getBytes());
 			String line = (String) mSocketReader.readObject();
 			while(line != null) {
 				line = (String) mSocketReader.readObject();

@@ -3,6 +3,7 @@ package com.revimedia.log.model;
 import java.io.File;
 import java.util.HashMap;
 
+import com.revimedia.log.net.ClientLogPooler;
 import com.revimedia.log.util.Configuration;
 
 public class FileTailerPool {
@@ -31,6 +32,12 @@ public class FileTailerPool {
 		mInstance.addFileTailerForFile(logFile);
 
 		return mTailerPool.get(logFile.getAbsolutePath());
+	}
+
+	public static void addNewListener(ClientLogPooler clientLogPooler) {
+		for(FileTailer tailer : mTailerPool.values()) {
+			tailer.addLogFileTailerListener(clientLogPooler);
+		}
 	}
 	
 }
