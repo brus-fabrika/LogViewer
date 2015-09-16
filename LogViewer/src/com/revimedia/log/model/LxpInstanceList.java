@@ -1,7 +1,9 @@
 package com.revimedia.log.model;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -46,6 +48,7 @@ public class LxpInstanceList implements Serializable {
 				Matcher m = pattern.matcher(file.getName());
 				if(m.find()) {
 					if(!mInstances.containsKey(m.group(1))) {
+						System.out.println("Instance found " + m.group(1));
 						mInstances.put(m.group(1), new HashSet<String>());
 					}
 					mInstances.get(m.group(1)).add(file.getAbsolutePath());
@@ -64,6 +67,31 @@ public class LxpInstanceList implements Serializable {
 
 	public Set<String> getInstanceFiles(String instanceName) {
 		return mInstances.get(instanceName);
+	}
+	
+	public String getMostRecentInstanceFile(String instanceName) throws FileNotFoundException {
+		if(!mInstances.containsKey(instanceName) || mInstances.get(instanceName).isEmpty()) {
+			throw new FileNotFoundException("Instance " + instanceName + " has no files");
+		}
+		
+		String[] fileList = mInstances.get(instanceName).toArray(new String[0]);
+		Arrays.sort(fileList);
+		
+		return fileList[fileList.length - 1];
+	}
+	
+	public Set<String> getMostRecentFileList() throws FileNotFoundException {
+		if(mInstances.isEmpty()) {
+			throw new FileNotFoundException("Instance list is empty");
+		}
+		
+		Set<String> resultList = new HashSet<>();
+		
+		for(String instanceName : mInstances.keySet()) {
+			resultList.add(getMostRecentInstanceFile(instanceName));
+		}
+		
+		return resultList;
 	}
 	
 	public void refresh() {

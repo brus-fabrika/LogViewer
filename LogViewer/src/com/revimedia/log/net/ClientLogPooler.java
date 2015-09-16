@@ -18,31 +18,28 @@ public class ClientLogPooler implements IFileTailerListener{
 	private FileTailer mLogFileTailer;
 	private ObjectOutputStream mOutWriter;
 	
-	private LxpInstanceList mInstanceList = new LxpInstanceList(new File("D:\\ttt"));
-	
 	public ClientLogPooler(Socket clientSocket, File logFile) {
 		mClientSocket = clientSocket;
 		mLogFileTailer = FileTailerPool.getTailerForFile(logFile);
 		
 		FileTailerPool.addNewListener(this);
 		
-//		try {
-//			mOutWriter = new ObjectOutputStream(mClientSocket.getOutputStream());
+		try {
+			mOutWriter = new ObjectOutputStream(mClientSocket.getOutputStream());
 //			mLogFileTailer.addLogFileTailerListener(this);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public ClientLogPooler(Socket clientSocket) {
 		mClientSocket = clientSocket;
-		mInstanceList.scan();
 		
 		FileTailerPool.addNewListener(this);
 		
-//		try {
-//			mOutWriter = new ObjectOutputStream(mClientSocket.getOutputStream());
+		try {
+			mOutWriter = new ObjectOutputStream(mClientSocket.getOutputStream());
 //			mOutWriter.writeObject(mInstanceList);
 //			BufferedReader in = new BufferedReader(new InputStreamReader(mClientSocket.getInputStream()));
 //			String fileToListen = in. readLine();
@@ -56,10 +53,10 @@ public class ClientLogPooler implements IFileTailerListener{
 //				// TODO: add exception here as we don't want to have this object anymore
 //			}
 //		
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void close() {

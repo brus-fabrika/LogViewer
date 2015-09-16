@@ -1,6 +1,7 @@
 package com.revimedia.log.net;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -10,13 +11,17 @@ import java.util.Arrays;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+import com.revimedia.log.model.FileTailerPool;
+import com.revimedia.log.model.LxpInstanceList;
 import com.revimedia.log.util.Configuration;
 
 public class LogServerSocket implements Runnable {
 	final private Logger log = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
 	final private int mPortNum = Configuration.getInstance().getPropertyAsInt("port", 4444);
 	
-	//private File mLogFile;
+	private LxpInstanceList mInstanceList = new LxpInstanceList(new File("D:\\temp\\test"));
+	
+	private File mLogFile; // TODO: remove
 
 	ArrayList<ClientLogPooler> mClients = new ArrayList<>();
 	
@@ -24,11 +29,19 @@ public class LogServerSocket implements Runnable {
 
 	private boolean isServerActivated = true;
 
-//	public LogServerSocket(File logFile){
-//		this.mLogFile = logFile;
-//	}
+	public LogServerSocket(File logFile){
+		this.mLogFile = logFile;  // TODO: remove
+	}
 	
 	public LogServerSocket() {
+		mInstanceList.scan();
+		try {
+			for(String fileName : mInstanceList.getMostRecentFileList()) {
+				FileTailerPool.getTailerForFile(new File(fileName));
+			}
+		} catch(FileNotFoundException e) {
+			log.severe(e.toString());
+		}
 		
 	}
 
