@@ -64,6 +64,16 @@ public class LxpInstanceList implements Serializable {
 	public Set<String> getInstances() {
 		return mInstances.keySet();
 	}
+	
+	public String getInstanceForFile(String fileName) {
+		for(String instance: mInstances.keySet()) {
+			if(mInstances.get(instance).contains(fileName)) {
+				return instance;
+			}
+		}
+		
+		return null;
+	}
 
 	public Set<String> getInstanceFiles(String instanceName) {
 		return mInstances.get(instanceName);

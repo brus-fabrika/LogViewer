@@ -43,6 +43,11 @@ public class FileTailer extends Thread {
 	private Set<IFileTailerListener> listeners = new HashSet<>();
 
 	private long mMostRecentLinesCount = 50*255;
+	
+	private final static char FIELD_DELIMITER = '?';
+	private Set<String> mCustomFields = new HashSet<>();
+
+	private String mPrefix = new String();
 
 	/**
 	 * Creates a new log file tailer that tails an existing file and checks the
@@ -123,7 +128,7 @@ public class FileTailer extends Thread {
 						String line = file.readLine();
 						while (line != null) {
 							if(!line.isEmpty()) {
-								this.fireNewLogFileLine(line);
+								processLogLine(line);
 							}
 							line = file.readLine();
 						}
@@ -140,6 +145,17 @@ public class FileTailer extends Thread {
 			file.close();
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+
+	private void processLogLine(String line) {
+		this.fireNewLogFileLine(mPrefix + line);
+	}
+	
+	public void addCustomField(String customField) {
+		if(!mCustomFields.contains(customField)) {
+			mCustomFields.add(customField);
+			mPrefix += customField + FIELD_DELIMITER;
 		}
 	}
 }
