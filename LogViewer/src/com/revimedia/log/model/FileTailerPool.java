@@ -39,5 +39,17 @@ public class FileTailerPool {
 			tailer.addLogFileTailerListener(clientLogPooler);
 		}
 	}
+
+	public static void stopAllTailers() {
+		for(FileTailer tailer : mTailerPool.values()) {
+			tailer.stopTailing();
+			try {
+				tailer.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 	
 }

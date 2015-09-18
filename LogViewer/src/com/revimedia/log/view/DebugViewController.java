@@ -27,7 +27,17 @@ public class DebugViewController implements IViewController {
 
 	@Override
 	public void stopProcessLogging() {
-		mLogServer.stopServer();
+		if(mLogServer != null) {
+			mLogServer.stopServer();
+			try {
+				mSocketThread.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		log.info("Log server terminated");
 	}
 
 	@Override

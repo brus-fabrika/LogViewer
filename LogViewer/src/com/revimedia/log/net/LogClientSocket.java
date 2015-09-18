@@ -3,8 +3,10 @@ package com.revimedia.log.net;
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -34,16 +36,24 @@ public class LogClientSocket implements Runnable {
 	}
 	
 	public boolean tryConnect() {
-		log.info("Start log server on port: " + mPortNum);
+		log.info("Connecting to log server " + mHost + ":" + mPortNum);
 		isConnected = false;
 		try {
 			mClientSocket = new Socket(mHost, mPortNum);
 			isConnected = true;
 			log.info("connection to server with "+ mHost +":" + mPortNum + " OK");
 			mSocketReader = new ObjectInputStream(mClientSocket.getInputStream());
+		} catch (ConnectException e) {
+			log.severe("Server " + mHost + ":" + mPortNum + " refused connection");
+		} catch (UnknownHostException e) {
+			log.severe("Log server host is unknown: " + mHost);
 		} catch (IOException e) {
+			log.severe("Log server socket creation error");
 			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			log.severe("Log server port number is incorrect: " + mPortNum);
 		}
+		
 		return isConnected;
 	}
 	

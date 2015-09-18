@@ -28,7 +28,7 @@ public class LogServerSocket implements Runnable {
 	
 	ServerSocket mServerSocket;
 
-	private boolean isServerActivated = true;
+	private volatile boolean isServerActivated = true;
 
 	public LogServerSocket(File logFile){
 		this.mLogFile = logFile;  // TODO: remove
@@ -76,6 +76,7 @@ public class LogServerSocket implements Runnable {
 			} catch(IOException ignore) {
 				log.severe(Arrays.toString(ignore.getStackTrace()));
 			}
+			FileTailerPool.stopAllTailers();
 		}
 	}
 	
