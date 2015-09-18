@@ -36,6 +36,8 @@ public class LogViewController implements IFileTailerListener, IViewController{
 	@FXML
 	private TableColumn<LogEntry, String> mTimeColumn;
 	@FXML
+	private TableColumn<LogEntry, String> mInstanceColumn;
+	@FXML
 	private TextField mRegexFilterText;
 	
 	private ArrayList<LogEntry> mLogsList = new ArrayList<>();
@@ -54,9 +56,9 @@ public class LogViewController implements IFileTailerListener, IViewController{
 	@FXML
 	private void initialize() {
 		mLineNumberColumn.setCellValueFactory(cellData -> cellData.getValue().lineNumberProperty());
-		mPayloadColumn.setCellValueFactory(cellData -> cellData.getValue().payloadProperty());
-		mTimeColumn.setCellValueFactory(cellData -> cellData.getValue().timestampProperty());
-		
+		mPayloadColumn.setCellValueFactory   (cellData -> cellData.getValue().payloadProperty());
+		mTimeColumn.setCellValueFactory      (cellData -> cellData.getValue().timestampProperty());
+		mInstanceColumn.setCellValueFactory  (cellData -> cellData.getValue().instanceProperty());
 		mLineNumberColumn.setMinWidth(50);
 		
 		mLogTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);

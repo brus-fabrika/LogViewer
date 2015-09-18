@@ -47,7 +47,7 @@ public class FileTailer extends Thread {
 
 	private long mMostRecentLinesCount = 50*255;
 	
-	private final static char FIELD_DELIMITER = '?';
+	private final static char FIELD_DELIMITER = '>';
 	private Set<String> mCustomFields = new HashSet<>();
 
 	private String mPrefix = new String();
