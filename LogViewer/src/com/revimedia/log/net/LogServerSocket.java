@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+import com.revimedia.log.model.FileTailer;
 import com.revimedia.log.model.FileTailerPool;
 import com.revimedia.log.model.LxpInstanceList;
 import com.revimedia.log.util.Configuration;
@@ -19,7 +20,7 @@ public class LogServerSocket implements Runnable {
 	final private Logger log = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
 	final private int mPortNum = Configuration.getInstance().getPropertyAsInt("port", 4444);
 	
-	private LxpInstanceList mInstanceList = new LxpInstanceList(new File("D:\\temp\\test"));
+	private LxpInstanceList mInstanceList = new LxpInstanceList();
 	
 	private File mLogFile; // TODO: remove
 
@@ -27,7 +28,7 @@ public class LogServerSocket implements Runnable {
 	
 	ServerSocket mServerSocket;
 
-	private boolean isServerActivated = true;
+	private volatile boolean isServerActivated = true;
 
 	public LogServerSocket(File logFile){
 		this.mLogFile = logFile;  // TODO: remove
@@ -37,7 +38,11 @@ public class LogServerSocket implements Runnable {
 		mInstanceList.scan();
 		try {
 			for(String fileName : mInstanceList.getMostRecentFileList()) {
-				FileTailerPool.getTailerForFile(new File(fileName));
+				FileTailer tailer = FileTailerPool.getTailerForFile(new File(fileName));
+				String instance = mInstanceList.getInstanceForFile(fileName);
+				if(instance != null) {
+					tailer.addCustomField(instance);
+				}
 			}
 		} catch(FileNotFoundException e) {
 			log.severe(e.toString());
@@ -71,6 +76,7 @@ public class LogServerSocket implements Runnable {
 			} catch(IOException ignore) {
 				log.severe(Arrays.toString(ignore.getStackTrace()));
 			}
+			FileTailerPool.stopAllTailers();
 		}
 	}
 	

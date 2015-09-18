@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.RandomAccessFile;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 /**
  * A log file tailer is designed to monitor a log file and send notifications
@@ -15,6 +17,7 @@ import java.util.Set;
  * notifications containing new log file lines, one at a time.
  */
 public class FileTailer extends Thread {
+	final private Logger log = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
 	/**
 	 * How frequently to check for file changes; defaults to 5 seconds
 	 */
@@ -43,6 +46,11 @@ public class FileTailer extends Thread {
 	private Set<IFileTailerListener> listeners = new HashSet<>();
 
 	private long mMostRecentLinesCount = 50*255;
+	
+	private final static char FIELD_DELIMITER = '?';
+	private Set<String> mCustomFields = new HashSet<>();
+
+	private String mPrefix = new String();
 
 	/**
 	 * Creates a new log file tailer that tails an existing file and checks the
@@ -86,12 +94,12 @@ public class FileTailer extends Thread {
 	}
 
 	public void stopTailing() {
-		System.out.println("Stop process the file");
-		this.tailing = false;
+		log.info("Stop process the file: " + logfile.getAbsolutePath());
+		this.interrupt();
 	}
 
 	public void run() {
-		System.out.println("FileTailer thread started for file: " + logfile.getAbsolutePath());
+		log.info("FileTailer thread started for file: " + logfile.getAbsolutePath());
 		// The file pointer keeps track of where we are in the file
 		long filePointer = 0;
 
@@ -106,7 +114,7 @@ public class FileTailer extends Thread {
 			// Start tailing
 			this.tailing = true;
 			RandomAccessFile file = new RandomAccessFile(logfile, "r");
-			while (this.tailing) {
+			while(true) {
 				try {
 					// Compare the length of the file to the file pointer
 					long fileLength = this.logfile.length();
@@ -123,7 +131,7 @@ public class FileTailer extends Thread {
 						String line = file.readLine();
 						while (line != null) {
 							if(!line.isEmpty()) {
-								this.fireNewLogFileLine(line);
+								processLogLine(line);
 							}
 							line = file.readLine();
 						}
@@ -132,14 +140,29 @@ public class FileTailer extends Thread {
 
 					// Sleep for the specified interval
 					Thread.sleep(this.sampleInterval);
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+					break;
 				} catch (Exception e) {
 				}
 			}
 
 			// Close the file that we are tailing
 			file.close();
+			this.tailing = false;
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+
+	private void processLogLine(String line) {
+		this.fireNewLogFileLine(mPrefix + line);
+	}
+	
+	public void addCustomField(String customField) {
+		if(!mCustomFields.contains(customField)) {
+			mCustomFields.add(customField);
+			mPrefix += customField + FIELD_DELIMITER;
 		}
 	}
 }
