@@ -22,7 +22,7 @@ public class LogEntry {
 	private void parseLog(String payload, int lineNumber) {
 		this.mLineNumber.set(lineNumber);
 		
-		String[] ss = payload.split(">", 2);
+		String[] ss = payload.split(">", 3);
 		if(ss.length == 3) {
 			this.mInstance.set(ss[0]);
 			this.mTimeStamp.set(ss[1]);

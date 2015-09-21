@@ -137,7 +137,8 @@ public class LogViewController implements IFileTailerListener, IViewController{
 		ObservableList<LogEntry> selectedRows = mLogTable.getSelectionModel().getSelectedItems();
 		StringBuilder clipContent = new StringBuilder();
 		for(LogEntry log: selectedRows) {
-			clipContent.append(String.format("%s\t%s\n",
+			clipContent.append(String.format("%s\t%s\t%s\n",
+				log.getInstance() == null ? "" : log.getTimeStamp(),
 				log.getTimeStamp() == null ? "" : log.getTimeStamp(),
 				log.getPayload() == null ? "" : log.getPayload()));
 		}
