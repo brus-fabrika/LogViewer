@@ -26,6 +26,7 @@ import com.revimedia.log.util.Configuration;
 import com.revimedia.log.view.IViewController;
 import com.revimedia.log.view.LogViewController;
 import com.revimedia.log.view.RootLayoutController;
+import com.revimedia.log.view.SearchResultsTableViewController;
 
 public class MainApp extends Application {
 
@@ -44,6 +45,8 @@ public class MainApp extends Application {
 	private BorderPane rootLayout;
 
 	private IViewController logViewController;
+	SearchResultsTableViewController mSearchViewCtrl;
+	
 	private Configuration mAppConfig;
 	
 	/**
@@ -130,6 +133,13 @@ public class MainApp extends Application {
 
 			LogViewController logViewCtrl = loader.getController();
 			
+			FXMLLoader loader2 = new FXMLLoader();
+			loader2.setLocation(getClass().getResource("view/SearchResultsTableView.fxml"));
+			BorderPane searchResultsView = (BorderPane) loader2.load();
+			
+			
+			mSearchViewCtrl = loader2.getController();
+			
 			final KeyCombination keyComb1 = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN);
 			
 			logView.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
@@ -142,6 +152,10 @@ public class MainApp extends Application {
 			
 			// Set person overview into the center of root layout.
 			rootLayout.setCenter(logView);
+			
+			rootLayout.setBottom(searchResultsView);
+			
+//			searchResultsView.setVisible(false);
 			
 			logViewController = logViewCtrl;
 
