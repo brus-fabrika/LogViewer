@@ -28,7 +28,6 @@ import com.revimedia.log.view.LogViewController;
 import com.revimedia.log.view.RootLayoutController;
 
 public class MainApp extends Application {
-
 	{
 		Logger log = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
 		log.setUseParentHandlers(false);

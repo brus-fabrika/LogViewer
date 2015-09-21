@@ -36,6 +36,8 @@ public class LogViewController implements IFileTailerListener, IViewController{
 	@FXML
 	private TableColumn<LogEntry, String> mTimeColumn;
 	@FXML
+	private TableColumn<LogEntry, String> mInstanceColumn;
+	@FXML
 	private TextField mRegexFilterText;
 	
 	private ArrayList<LogEntry> mLogsList = new ArrayList<>();
@@ -54,9 +56,9 @@ public class LogViewController implements IFileTailerListener, IViewController{
 	@FXML
 	private void initialize() {
 		mLineNumberColumn.setCellValueFactory(cellData -> cellData.getValue().lineNumberProperty());
-		mPayloadColumn.setCellValueFactory(cellData -> cellData.getValue().payloadProperty());
-		mTimeColumn.setCellValueFactory(cellData -> cellData.getValue().timestampProperty());
-		
+		mPayloadColumn.setCellValueFactory   (cellData -> cellData.getValue().payloadProperty());
+		mTimeColumn.setCellValueFactory      (cellData -> cellData.getValue().timestampProperty());
+		mInstanceColumn.setCellValueFactory  (cellData -> cellData.getValue().instanceProperty());
 		mLineNumberColumn.setMinWidth(50);
 		
 		mLogTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -135,7 +137,8 @@ public class LogViewController implements IFileTailerListener, IViewController{
 		ObservableList<LogEntry> selectedRows = mLogTable.getSelectionModel().getSelectedItems();
 		StringBuilder clipContent = new StringBuilder();
 		for(LogEntry log: selectedRows) {
-			clipContent.append(String.format("%s\t%s\n",
+			clipContent.append(String.format("%s\t%s\t%s\n",
+				log.getInstance() == null ? "" : log.getTimeStamp(),
 				log.getTimeStamp() == null ? "" : log.getTimeStamp(),
 				log.getPayload() == null ? "" : log.getPayload()));
 		}
