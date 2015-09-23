@@ -1,11 +1,8 @@
 package com.revimedia.log.view;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,7 +10,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 
@@ -35,21 +31,14 @@ public class LogViewController implements IFileTailerListener, IViewController{
 	private TableColumn<LogEntry, String> mPayloadColumn;
 	@FXML
 	private TableColumn<LogEntry, String> mTimeColumn;
-	@FXML
-	private TextField mRegexFilterText;
-	
-	private ArrayList<LogEntry> mLogsList = new ArrayList<>();
 	
 	private ObservableList<LogEntry> mLogs = FXCollections.observableArrayList();
-	
-	private String mRegex;
-	private Pattern mRegexPattern;
-	private boolean isRegexModeOff = true;
 	
 	private FileTailer mLogFileTailer;
 	private Thread mLogFileTailerThread;
 
 	private LogClientSocket mClientSocket;
+
 	
 	@FXML
 	private void initialize() {
@@ -62,36 +51,6 @@ public class LogViewController implements IFileTailerListener, IViewController{
 		mLogTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		
 		mLogTable.setItems(mLogs);
-	}
-	
-	@FXML
-	private void onRegexUpdate() {
-		System.out.println("LogViewTableViewController.onRegexUpdate()");
-		
-		isRegexModeOff = mRegexFilterText.getText().isEmpty();
-		
-		if(isRegexModeOff) {
-			mRegexPattern = null;
-			mLogs.clear();
-			if(!mLogsList.isEmpty()) {
-				mLogs.setAll(mLogsList);
-			}
-			return;
-		}
-		
-		if(mRegexFilterText.getText().equals(mRegex)) return;
-		
-		mRegex = "(" + mRegexFilterText.getText() + ")";
-		mRegexPattern = Pattern.compile(mRegex);
-		
-		mLogs.clear();
-		
-		for(LogEntry log: mLogsList) {
-			Matcher m = mRegexPattern.matcher(log.getPayload());
-			if(m.find()) {
-				mLogs.add(log);
-			}
-		}
 	}
 	
 	@Override
@@ -121,12 +80,13 @@ public class LogViewController implements IFileTailerListener, IViewController{
 
 	@Override
 	public void onFileUpdate(String line) {
-		LogEntry e = new LogEntry(line, mLogsList.size()+1);
-		mLogsList.add(e);
+		LogEntry e = new LogEntry(line, mLogs.size()+1);
+		mLogs.add(e);
 		
-		if(isRegexModeOff || mRegexPattern.matcher(e.getPayload()).find()) {
-			mLogs.add(e);
-		}
+		// TODO apply auto update for results view
+//		if(isRegexModeOff || mRegexPattern.matcher(e.getPayload()).find()) {
+//			mLogs.add(e);
+//		}
 	}
 
 	public void onCtrlC() {
@@ -158,12 +118,7 @@ public class LogViewController implements IFileTailerListener, IViewController{
 	}
 	
 	private void clearLogView() {
-		mRegexFilterText.clear();
 		mLogs.clear();
-		isRegexModeOff = true;
-		mRegexPattern = null;
-		
-		mLogsList = new ArrayList<>();
 	}
 
 	@Override
@@ -181,5 +136,10 @@ public class LogViewController implements IFileTailerListener, IViewController{
 		}
 		
 		return isConnected;
+	}
+
+	@Override
+	public LogEntry[] getAll() {
+		return mLogs.toArray(new LogEntry[0]);
 	}
 }

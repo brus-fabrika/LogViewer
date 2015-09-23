@@ -157,8 +157,10 @@ public class MainApp extends Application {
 			
 //			searchResultsView.setVisible(false);
 			
+			mSearchViewCtrl.setParentView(logViewCtrl);
+			
 			logViewController = logViewCtrl;
-
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

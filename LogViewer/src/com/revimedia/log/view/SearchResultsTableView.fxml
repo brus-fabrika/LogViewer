@@ -10,20 +10,25 @@
    <center>
       <TableView fx:id="mLogTable" prefHeight="200.0" prefWidth="742.0" BorderPane.alignment="CENTER">
         <columns>
-            <TableColumn prefWidth="75.0" text="#" />
-          <TableColumn minWidth="50.0" prefWidth="150.0" text="Time" />
-          <TableColumn editable="false" prefWidth="587.0" text="Payload" />
+          <TableColumn fx:id="mLineNumberColumn" editable="false" prefWidth="75.0" text="#" />
+          <TableColumn fx:id="mTimeColumn"       editable="false" minWidth="50.0" prefWidth="150.0" text="Time" />
+          <TableColumn fx:id="mPayloadColumn"    editable="false" prefWidth="587.0" text="Payload" />
         </columns>
       </TableView>
    </center>
    <top>
       <HBox prefHeight="36.0" prefWidth="742.0" BorderPane.alignment="CENTER">
          <children>
-            <Label prefHeight="26.0" prefWidth="100.0" text="Search Results">
+            <Label prefHeight="26.0" prefWidth="100.0" text="Search regex: ">
                <HBox.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </HBox.margin>
             </Label>
+            <TextField fx:id="mRegexFilterText" onAction="#onRegexUpdate" prefHeight="37.0" prefWidth="644.0">
+               <HBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </HBox.margin>
+            </TextField>
          </children>
       </HBox>
    </top>
