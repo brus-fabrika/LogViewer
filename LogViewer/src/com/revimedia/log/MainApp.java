@@ -12,7 +12,9 @@ import java.util.logging.Logger;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Orientation;
 import javafx.scene.Scene;
+import javafx.scene.control.SplitPane;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -71,8 +73,9 @@ public class MainApp extends Application {
 			this.primaryStage.setWidth(width/4);
 			this.primaryStage.setHeight(height/4);
 		} else {
-			this.primaryStage.setWidth(width/2);
-			this.primaryStage.setHeight(height/2);
+//			this.primaryStage.setWidth(width/2);
+//			this.primaryStage.setHeight(height/2);
+			this.primaryStage.setMaximized(true);
 		}
 		
 		initRootLayout();
@@ -150,12 +153,16 @@ public class MainApp extends Application {
 			
 			this.primaryStage.setOnCloseRequest( event -> logViewCtrl.stopProcessLogging() );
 			
-			// Set person overview into the center of root layout.
-			rootLayout.setCenter(logView);
+//			rootLayout.setCenter(logView);
+//			rootLayout.setBottom(searchResultsView);
 			
-			rootLayout.setBottom(searchResultsView);
+			SplitPane sp = new SplitPane();
+			sp.setOrientation(Orientation.VERTICAL);
+			sp.getItems().addAll(logView, searchResultsView);
 			
-//			searchResultsView.setVisible(false);
+			sp.setDividerPositions(0.75f);
+			
+			rootLayout.setCenter(sp);
 			
 			mSearchViewCtrl.setParentView(logViewCtrl);
 			

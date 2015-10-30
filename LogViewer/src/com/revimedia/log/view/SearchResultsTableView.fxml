@@ -6,13 +6,13 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane styleClass="background" stylesheets="@DarkTheme.css" xmlns="http://javafx.com/javafx/8.0.51" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.revimedia.log.view.SearchResultsTableViewController">
+<BorderPane styleClass="background" stylesheets="@DarkTheme.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.revimedia.log.view.SearchResultsTableViewController">
    <center>
       <TableView fx:id="mLogTable" prefHeight="200.0" prefWidth="742.0" BorderPane.alignment="CENTER">
         <columns>
           <TableColumn fx:id="mLineNumberColumn" editable="false" prefWidth="75.0" text="#" />
-          <TableColumn fx:id="mTimeColumn"       editable="false" minWidth="50.0" prefWidth="150.0" text="Time" />
-          <TableColumn fx:id="mPayloadColumn"    editable="false" prefWidth="587.0" text="Payload" />
+          <TableColumn fx:id="mTimeColumn" editable="false" minWidth="50.0" prefWidth="150.0" text="Time" />
+          <TableColumn fx:id="mPayloadColumn" editable="false" prefWidth="587.0" text="Payload" />
         </columns>
       </TableView>
    </center>
@@ -24,7 +24,7 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </HBox.margin>
             </Label>
-            <TextField fx:id="mRegexFilterText" onAction="#onRegexUpdate" prefHeight="37.0" prefWidth="644.0">
+            <TextField fx:id="mRegexFilterText" onAction="#onRegexUpdate" prefHeight="37.0" HBox.hgrow="ALWAYS">
                <HBox.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </HBox.margin>
