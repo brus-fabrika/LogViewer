@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane styleClass="background" stylesheets="@DarkTheme.css" xmlns="http://javafx.com/javafx/8.0.51" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.revimedia.log.view.LogViewController">
+<BorderPane styleClass="background" stylesheets="@DarkTheme.css" xmlns="http://javafx.com/javafx/8.0.45" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.revimedia.log.view.LogViewController">
    <center>
       <TableView fx:id="mLogTable" prefHeight="200.0" prefWidth="742.0" BorderPane.alignment="CENTER">
         <columns>
@@ -17,7 +17,7 @@
         </columns>
       </TableView>
    </center>
-   <top>
+<!--   <top>
       <HBox prefHeight="36.0" prefWidth="742.0" BorderPane.alignment="CENTER">
          <children>
             <Label prefHeight="43.0" prefWidth="90.0" text="Regex Filter:">
@@ -33,4 +33,5 @@
          </children>
       </HBox>
    </top>
+-->
 </BorderPane>

@@ -12,7 +12,9 @@ import java.util.logging.Logger;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Orientation;
 import javafx.scene.Scene;
+import javafx.scene.control.SplitPane;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -26,6 +28,7 @@ import com.revimedia.log.util.Configuration;
 import com.revimedia.log.view.IViewController;
 import com.revimedia.log.view.LogViewController;
 import com.revimedia.log.view.RootLayoutController;
+import com.revimedia.log.view.SearchResultsTableViewController;
 
 public class MainApp extends Application {
 	{
@@ -43,7 +46,11 @@ public class MainApp extends Application {
 	private BorderPane rootLayout;
 
 	private IViewController logViewController;
+	SearchResultsTableViewController mSearchViewCtrl;
+	
 	private Configuration mAppConfig;
+
+	private BorderPane mSearchResultsView;
 	
 	/**
 	 * Constructor
@@ -67,8 +74,9 @@ public class MainApp extends Application {
 			this.primaryStage.setWidth(width/4);
 			this.primaryStage.setHeight(height/4);
 		} else {
-			this.primaryStage.setWidth(width/2);
-			this.primaryStage.setHeight(height/2);
+//			this.primaryStage.setWidth(width/2);
+//			this.primaryStage.setHeight(height/2);
+			this.primaryStage.setMaximized(true);
 		}
 		
 		initRootLayout();
@@ -129,21 +137,57 @@ public class MainApp extends Application {
 
 			LogViewController logViewCtrl = loader.getController();
 			
-			final KeyCombination keyComb1 = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN);
+			FXMLLoader loader2 = new FXMLLoader();
+			loader2.setLocation(getClass().getResource("view/SearchResultsTableView.fxml"));
+			mSearchResultsView = (BorderPane) loader2.load();
 			
-			logView.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
-				if (keyComb1.match(event)) {
+			
+			mSearchViewCtrl = loader2.getController();
+			
+			final KeyCombination ctrlC = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN);
+			
+			logView.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+				if (ctrlC.match(event)) {
 					logViewCtrl.onCtrlC();
+				}
+			});
+			
+			mSearchResultsView.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+				if (ctrlC.match(event)) {
+					mSearchViewCtrl.onCtrlC();
 				}
 			});
 			
 			this.primaryStage.setOnCloseRequest( event -> logViewCtrl.stopProcessLogging() );
 			
-			// Set person overview into the center of root layout.
-			rootLayout.setCenter(logView);
+			SplitPane sp = new SplitPane();
+			sp.setOrientation(Orientation.VERTICAL);
+			sp.getItems().addAll(logView, mSearchResultsView);
+			
+			sp.setDividerPositions(0.75f);
+			
+			rootLayout.setCenter(sp);
+			
+			final KeyCombination ctrlF = new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN);
+			
+			primaryStage.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+				if (ctrlF.match(event)) {
+					if(mSearchResultsView.isVisible()) {
+						log.info("Ctrl-F pressed: hide search");
+						sp.getItems().remove(mSearchResultsView);
+					} else {
+						log.info("Ctrl-F pressed: show search");
+						sp.getItems().add(mSearchResultsView);
+						sp.setDividerPositions(0.75f);
+					}
+					mSearchResultsView.setVisible(!mSearchResultsView.isVisible());
+				}
+			});
+			
+			mSearchViewCtrl.setParentView(logViewCtrl);
 			
 			logViewController = logViewCtrl;
-
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+import com.revimedia.log.model.LogEntry;
 import com.revimedia.log.net.LogServerSocket;
 
 
@@ -48,6 +49,11 @@ public class DebugViewController implements IViewController {
 		mSocketThread.start();
 		
 		return true;
+	}
+
+	@Override
+	public LogEntry[] getAll() {
+		return null; //TODO throw NotYetImplemented
 	}
 	
 }
