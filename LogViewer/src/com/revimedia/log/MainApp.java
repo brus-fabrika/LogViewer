@@ -50,6 +50,8 @@ public class MainApp extends Application {
 	SearchResultsTableViewController mSearchViewCtrl;
 	
 	private Configuration mAppConfig;
+
+	private BorderPane mSearchResultsView;
 	
 	/**
 	 * Constructor
@@ -138,31 +140,50 @@ public class MainApp extends Application {
 			
 			FXMLLoader loader2 = new FXMLLoader();
 			loader2.setLocation(getClass().getResource("view/SearchResultsTableView.fxml"));
-			BorderPane searchResultsView = (BorderPane) loader2.load();
+			mSearchResultsView = (BorderPane) loader2.load();
 			
 			
 			mSearchViewCtrl = loader2.getController();
 			
-			final KeyCombination keyComb1 = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN);
+			final KeyCombination ctrlC = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN);
 			
-			logView.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
-				if (keyComb1.match(event)) {
+			logView.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+				if (ctrlC.match(event)) {
 					logViewCtrl.onCtrlC();
+				}
+			});
+			
+			mSearchResultsView.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+				if (ctrlC.match(event)) {
+					mSearchViewCtrl.onCtrlC();
 				}
 			});
 			
 			this.primaryStage.setOnCloseRequest( event -> logViewCtrl.stopProcessLogging() );
 			
-//			rootLayout.setCenter(logView);
-//			rootLayout.setBottom(searchResultsView);
-			
 			SplitPane sp = new SplitPane();
 			sp.setOrientation(Orientation.VERTICAL);
-			sp.getItems().addAll(logView, searchResultsView);
+			sp.getItems().addAll(logView, mSearchResultsView);
 			
 			sp.setDividerPositions(0.75f);
 			
 			rootLayout.setCenter(sp);
+			
+			final KeyCombination ctrlF = new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN);
+			
+			primaryStage.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+				if (ctrlF.match(event)) {
+					if(mSearchResultsView.isVisible()) {
+						log.info("Ctrl-F pressed: hide search");
+						sp.getItems().remove(mSearchResultsView);
+					} else {
+						log.info("Ctrl-F pressed: show search");
+						sp.getItems().add(mSearchResultsView);
+						sp.setDividerPositions(0.75f);
+					}
+					mSearchResultsView.setVisible(!mSearchResultsView.isVisible());
+				}
+			});
 			
 			mSearchViewCtrl.setParentView(logViewCtrl);
 			

@@ -10,6 +10,8 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 
 import com.revimedia.log.model.LogEntry;
 
@@ -64,7 +66,6 @@ public class SearchResultsTableViewController {
 		mRegexPattern = Pattern.compile(mRegex);
 		
 		LogEntry[] mLogsList = mParrentViewCtrl.getAll();
-		
 		for(LogEntry log: mLogsList) {
 			Matcher m = mRegexPattern.matcher(log.getPayload());
 			if(m.find()) {
@@ -84,5 +85,24 @@ public class SearchResultsTableViewController {
 	
 	public void setParentView(IViewController parentCtrl) {
 		mParrentViewCtrl = parentCtrl;
+	}
+
+	public void onCtrlC() {
+		System.out.println( "Search results: Ctrl-C pressed !!!" );
+		
+		ObservableList<LogEntry> selectedRows = mLogTable.getSelectionModel().getSelectedItems();
+		StringBuilder clipContent = new StringBuilder();
+		for(LogEntry log: selectedRows) {
+			clipContent.append(String.format("%s\t%s\n",
+				log.getTimeStamp() == null ? "" : log.getTimeStamp(),
+				log.getPayload() == null ? "" : log.getPayload()));
+		}
+		
+		if(clipContent.length() > 0) {
+			final ClipboardContent content = new ClipboardContent();
+			content.putString(clipContent.toString());
+			Clipboard.getSystemClipboard().setContent(content);
+		}
+		
 	}
 }
