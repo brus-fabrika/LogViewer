@@ -21,6 +21,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -141,6 +142,11 @@ public class MainApp extends Application {
 			loader2.setLocation(getClass().getResource("view/SearchResultsTableView.fxml"));
 			mSearchResultsView = (BorderPane) loader2.load();
 			
+			FXMLLoader loader3 = new FXMLLoader();
+			loader3.setLocation(getClass().getResource("view/InstanceView.fxml"));
+			VBox mInstanceView = (VBox) loader3.load();
+			
+			rootLayout.setLeft(mInstanceView);
 			
 			mSearchViewCtrl = loader2.getController();
 			
