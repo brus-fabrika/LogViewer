@@ -4,15 +4,12 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="349.0" prefWidth="187.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.revimedia.log.view.InstanceViewController">
+<VBox minHeight="100.0" minWidth="100.0" prefHeight="445.0" prefWidth="187.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.revimedia.log.view.InstanceViewController">
    <children>
-      <ScrollPane fitToHeight="true" fitToWidth="true">
-        <content>
-          <AnchorPane prefHeight="431.0" prefWidth="185.0">
-               <children>
-                  <ListView layoutX="-7.0" layoutY="-83.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0" />
-               </children></AnchorPane>
-        </content>
+      <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="451.0" prefWidth="187.0" VBox.vgrow="ALWAYS">
+         <content>
+            <ListView fx:id="listView" prefHeight="362.0" prefWidth="185.0" style="-fx-border-color: red;" />
+         </content>
       </ScrollPane>
    </children>
 </VBox>
