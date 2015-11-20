@@ -15,7 +15,9 @@ import javafx.scene.input.ClipboardContent;
 
 import com.revimedia.log.model.FileTailer;
 import com.revimedia.log.model.IFileTailerListener;
+import com.revimedia.log.model.InstanceFilter;
 import com.revimedia.log.model.LogEntry;
+import com.revimedia.log.model.LogFilters;
 import com.revimedia.log.net.LogClientSocket;
 
 public class LogViewController implements IFileTailerListener, IViewController{
@@ -41,6 +43,9 @@ public class LogViewController implements IFileTailerListener, IViewController{
 
 	private LogClientSocket mClientSocket;
 	
+	private LogFilters mLogFilters = new LogFilters();
+	private InstanceFilter mInstanceFilter = new InstanceFilter();
+	
 	@FXML
 	private void initialize() {
 		mLineNumberColumn.setCellValueFactory(cellData -> cellData.getValue().lineNumberProperty());
@@ -52,6 +57,9 @@ public class LogViewController implements IFileTailerListener, IViewController{
 		mLogTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		
 		mLogTable.setItems(mLogs);
+		
+		mInstanceFilter.addCondition("HART");
+		mLogFilters.addFilter(mInstanceFilter);
 	}
 	
 	@Override
@@ -81,8 +89,12 @@ public class LogViewController implements IFileTailerListener, IViewController{
 
 	@Override
 	public void onFileUpdate(String line) {
-		LogEntry e = new LogEntry(line, mLogs.size()+1);
-		mLogs.add(e);
+		
+		boolean passed = mLogFilters.check(line);
+		if(passed) {
+			LogEntry e = new LogEntry(line, mLogs.size()+1);
+			mLogs.add(e);
+		}
 		
 		// TODO apply auto update for results view
 //		if(isRegexModeOff || mRegexPattern.matcher(e.getPayload()).find()) {
