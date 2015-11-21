@@ -27,6 +27,7 @@ import javafx.stage.Stage;
 
 import com.revimedia.log.util.Configuration;
 import com.revimedia.log.view.IViewController;
+import com.revimedia.log.view.InstanceViewController;
 import com.revimedia.log.view.LogViewController;
 import com.revimedia.log.view.RootLayoutController;
 import com.revimedia.log.view.SearchResultsTableViewController;
@@ -149,6 +150,14 @@ public class MainApp extends Application {
 			rootLayout.setLeft(mInstanceView);
 			
 			mSearchViewCtrl = loader2.getController();
+			
+			InstanceViewController instanceViewCtrl = loader3.getController();
+			
+			instanceViewCtrl.addInstanceHandler(
+					(instance, checked) -> logViewCtrl.instanceChecked(instance, checked));
+			
+			logViewCtrl.addNewInstanceHandler(
+					instanceName -> instanceViewCtrl.addInstance(instanceName));
 			
 			final KeyCombination ctrlC = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN);
 			
