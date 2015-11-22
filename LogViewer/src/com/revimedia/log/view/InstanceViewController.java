@@ -24,11 +24,6 @@ public class InstanceViewController {
 	@FXML
 	private void initialize() {
 		listView.setCellFactory(CheckBoxListCell.forListView(item -> item.instanceCheckedProperty()));
-		addInstance(new LxpInstance("DEMO", true));
-		addInstance(new LxpInstance("BETA64", true));
-		addInstance(new LxpInstance("HART", true));
-		addInstance(new LxpInstance("BETA", true));
-		addInstance(new LxpInstance("BASE", true));
 	}
 
 	public void addInstance(LxpInstance instance) {
