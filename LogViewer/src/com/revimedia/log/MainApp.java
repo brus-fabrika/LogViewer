@@ -21,11 +21,13 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import com.revimedia.log.util.Configuration;
 import com.revimedia.log.view.IViewController;
+import com.revimedia.log.view.InstanceViewController;
 import com.revimedia.log.view.LogViewController;
 import com.revimedia.log.view.RootLayoutController;
 import com.revimedia.log.view.SearchResultsTableViewController;
@@ -141,8 +143,21 @@ public class MainApp extends Application {
 			loader2.setLocation(getClass().getResource("view/SearchResultsTableView.fxml"));
 			mSearchResultsView = (BorderPane) loader2.load();
 			
+			FXMLLoader loader3 = new FXMLLoader();
+			loader3.setLocation(getClass().getResource("view/InstanceView.fxml"));
+			VBox mInstanceView = (VBox) loader3.load();
+			
+			rootLayout.setLeft(mInstanceView);
 			
 			mSearchViewCtrl = loader2.getController();
+			
+			InstanceViewController instanceViewCtrl = loader3.getController();
+			
+			instanceViewCtrl.addInstanceHandler(
+					(instance, checked) -> logViewCtrl.instanceChecked(instance, checked));
+			
+			logViewCtrl.addNewInstanceHandler(
+					instanceName -> instanceViewCtrl.addInstance(instanceName));
 			
 			final KeyCombination ctrlC = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN);
 			
