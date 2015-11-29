@@ -22,19 +22,17 @@ public class LogServerSocket implements Runnable {
 	
 	private LxpInstanceList mInstanceList = new LxpInstanceList();
 	
-	private File mLogFile; // TODO: remove
-
 	ArrayList<ClientLogPooler> mClients = new ArrayList<>();
 	
 	ServerSocket mServerSocket;
-
+	Thread mInstanceListRefreshThread;
+	
 	private volatile boolean isServerActivated = true;
 
-	public LogServerSocket(File logFile){
-		this.mLogFile = logFile;  // TODO: remove
+	public LogServerSocket() {
 	}
 	
-	public LogServerSocket() {
+	private void init() {
 		mInstanceList.scan();
 		try {
 			for(String fileName : mInstanceList.getMostRecentFileList()) {
@@ -44,21 +42,44 @@ public class LogServerSocket implements Runnable {
 					tailer.addCustomField(instance);
 				}
 			}
+			FileTailerPool.startAllTailers();
 		} catch(FileNotFoundException e) {
 			log.severe(e.toString());
 		}
-		
 	}
 
+	private void startRefreshThread() {
+		mInstanceListRefreshThread = new Thread(() -> {
+			log.info("Instance refresh thread started");
+			while(!Thread.currentThread().isInterrupted()) {
+				mInstanceList.refresh(); 
+				try {
+					Thread.sleep(60000L); // TODO: refactor this later
+				} catch (InterruptedException e) {
+					log.info("Instance refresh thread interrupted");
+					break;
+				}
+			}
+			log.info("Instance refresh thread stopped");
+		});
+		mInstanceListRefreshThread.start();
+	}
+	
 	@Override
 	public void run() {
 		log.info("Start log server on port: " + mPortNum);
 		
+		if(mClients.size() == 0) {
+			init();
+			startRefreshThread();
+		}
+
 		try {
 			mServerSocket = new ServerSocket(mPortNum);
 			while(isServerActivated) {
 				Socket clientSocket = mServerSocket.accept();
 				log.info("Client socket connected: " + clientSocket.getInetAddress());
+				
 				mClients.add(new ClientLogPooler(clientSocket));
 			}
 		} catch(SocketException e) {
@@ -72,7 +93,12 @@ public class LogServerSocket implements Runnable {
 		isServerActivated = false;
 		if(mServerSocket != null) {
 			try {
-				mServerSocket.close();
+				if(mServerSocket != null) {
+					mServerSocket.close();
+				}
+				if(mInstanceListRefreshThread != null) {
+					mInstanceListRefreshThread.interrupt();
+				}
 			} catch(IOException ignore) {
 				log.severe(Arrays.toString(ignore.getStackTrace()));
 			}

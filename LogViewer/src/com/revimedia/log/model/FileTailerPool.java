@@ -18,7 +18,7 @@ public class FileTailerPool {
 		if(mTailerPool.containsKey(logFile.getAbsolutePath())) return;
 		
 		FileTailer fileTailer = new FileTailer(logFile, FILE_POOLING_INTERVAL, false);
-		fileTailer.start();
+		//fileTailer.start();
 		
 		mTailerPool.put(logFile.getAbsolutePath(), fileTailer);
 	}
@@ -52,4 +52,9 @@ public class FileTailerPool {
 		}
 	}
 	
+	public static void startAllTailers() {
+		for(FileTailer tailer : mTailerPool.values()) {
+			tailer.start();
+		}
+	}
 }

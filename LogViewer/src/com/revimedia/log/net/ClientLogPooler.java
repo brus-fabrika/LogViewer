@@ -5,19 +5,16 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import com.revimedia.log.model.FileTailer;
 import com.revimedia.log.model.FileTailerPool;
 import com.revimedia.log.model.IFileTailerListener;
 
 public class ClientLogPooler implements IFileTailerListener{
 
 	final private Socket mClientSocket;
-	private FileTailer mLogFileTailer;
 	private ObjectOutputStream mOutWriter;
 	
 	public ClientLogPooler(Socket clientSocket, File logFile) {
 		mClientSocket = clientSocket;
-		mLogFileTailer = FileTailerPool.getTailerForFile(logFile);
 		FileTailerPool.addNewListener(this);
 		try {
 			mOutWriter = new ObjectOutputStream(mClientSocket.getOutputStream());
@@ -50,12 +47,18 @@ public class ClientLogPooler implements IFileTailerListener{
 	
 	@Override
 	public void onFileUpdate(String line) {
+		System.out.println(toString() + " send line " + line);
 		try {
 			mOutWriter.writeObject(line + "\n");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	@Override
+	public String toString() {
+		return mClientSocket.getLocalAddress() + ":" + mClientSocket.getLocalPort();
 	}
 
 }

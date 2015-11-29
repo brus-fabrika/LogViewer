@@ -1,23 +1,19 @@
 package com.revimedia.log.net;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.Arrays;
+import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import com.revimedia.log.model.IFileTailerListener;
-import com.revimedia.log.model.LxpInstanceList;
-import com.revimedia.log.util.Configuration;
 
 public class LogClientSocket implements Runnable {
 	final private Logger log = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
-//	final private int mPortNum = Configuration.getInstance().getPropertyAsInt("port", 4444);
 	
 	private Socket mClientSocket;
 	private String mHost;
@@ -65,24 +61,6 @@ public class LogClientSocket implements Runnable {
 		}
 
 		try {
-//			LxpInstanceList lxps = (LxpInstanceList) mSocketReader.readObject();
-//			
-//			if(lxps.isEmpty()) {
-//				log.severe("No LXP log files found on server");
-//				return;
-//			}
-//			
-//			String fileToListen = getLxpFile(lxps);
-//			
-//			if(fileToListen.isEmpty()) {
-//				log.severe("No LXP instance <...> log files found on server");
-//				return;
-//			}
-//			
-//			log.info("Client tries to connect to file " + fileToListen);
-//			
-//			fileToListen += "\n";
-//			mClientSocket.getOutputStream().write(fileToListen.getBytes());
 			String line = (String) mSocketReader.readObject();
 			while(line != null) {
 				line = (String) mSocketReader.readObject();
@@ -91,38 +69,10 @@ public class LogClientSocket implements Runnable {
 		} catch(SocketException e) {
 			log.warning("Server interrupted");
 		} catch (IOException e) {
-			log.severe(Arrays.toString(e.getStackTrace()));
+			log.log(Level.SEVERE, "Socket read error", e);
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.log(Level.SEVERE, "Socket read error", e);
 		}
-	}
-
-	private String getLxpFile(LxpInstanceList lxps) {
-		
-		String lxpName = Configuration.getInstance().getProperty("default_instance");
-		
-		if(lxps.getInstanceFiles(lxpName) == null) {
-			log.severe("No logs found for lxp instance " + lxpName);
-			return "";
-		}
-		
-		String[] instanceFileList = (String[]) lxps.getInstanceFiles(lxpName).toArray(new String[0]);
-		int mostRecentValue = -1;
-		int mostRecentIndex = 0;
-		for(int fileIndex = 0; fileIndex < instanceFileList.length; ++fileIndex) {
-			File tmpFileObject = new File(instanceFileList[fileIndex]);
-			String tmp = tmpFileObject.getName().replace(lxpName, "").replace(".log", "").replace("am", "0").replace("pm", "1");
-			int fileNameValue = Integer.valueOf(tmp);
-			if(fileNameValue > mostRecentValue) {
-				mostRecentIndex = fileIndex;
-				mostRecentValue = fileNameValue;
-			}
-		}
-		
-		log.info("Most recent file for default instance is " + instanceFileList[mostRecentIndex]);
-		
-		return instanceFileList[mostRecentIndex];
 	}
 
 	public void disconnect() {
@@ -134,8 +84,7 @@ public class LogClientSocket implements Runnable {
 			try {
 				mClientSocket.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.log(Level.SEVERE, "Socket close error", e);
 			}
 		}
 	}

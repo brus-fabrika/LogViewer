@@ -105,7 +105,7 @@ public class LxpInstanceList implements Serializable {
 	}
 	
 	public void refresh() {
-		
+		System.out.println("Instance list refresh...");
 	}
 	
 }

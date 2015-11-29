@@ -60,9 +60,6 @@ public class LogViewController implements IFileTailerListener
 		mLogTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		
 		mLogTable.setItems(mLogs);
-		
-		mInstanceFilter.addCondition("HART");
-		mLogFilters.addFilter(mInstanceFilter);
 	}
 	
 	@Override
@@ -92,18 +89,12 @@ public class LogViewController implements IFileTailerListener
 
 	@Override
 	public void onFileUpdate(String line) {
-		
 		boolean passed = mLogFilters.check(line);
 		if(passed) {
 			LogEntry e = new LogEntry(line, mLogs.size()+1);
 			mLogs.add(e);
 			mNewInstanceLogHandler.handleNewInstance(e.getInstance());;
 		}
-		
-		// TODO apply auto update for results view
-//		if(isRegexModeOff || mRegexPattern.matcher(e.getPayload()).find()) {
-//			mLogs.add(e);
-//		}
 	}
 
 	public void onCtrlC() {
