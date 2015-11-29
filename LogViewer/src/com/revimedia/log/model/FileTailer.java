@@ -51,6 +51,7 @@ public class FileTailer extends Thread {
 	private Set<String> mCustomFields = new HashSet<>();
 
 	private String mPrefix = new String();
+	private boolean isActive = true;
 
 	/**
 	 * Creates a new log file tailer that tails an existing file and checks the
@@ -171,5 +172,13 @@ public class FileTailer extends Thread {
 			mCustomFields.add(customField);
 			mPrefix += customField + FIELD_DELIMITER;
 		}
+	}
+
+	public void setActive(boolean active) {
+		this.isActive = active;
+	}
+	
+	public boolean isActive() {
+		return this.isActive;
 	}
 }
