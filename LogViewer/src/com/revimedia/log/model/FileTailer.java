@@ -43,14 +43,15 @@ public class FileTailer extends Thread {
 	/**
 	 * Set of listeners
 	 */
-	private Set<IFileTailerListener> listeners = new HashSet<>();
+	private volatile Set<IFileTailerListener> listeners = new HashSet<>();
 
-	private long mMostRecentLinesCount = 50*255;
+	private long mMostRecentLinesCount = 5*255;
 	
 	private final static char FIELD_DELIMITER = '>';
 	private Set<String> mCustomFields = new HashSet<>();
 
 	private String mPrefix = new String();
+	private volatile boolean isActive = true;
 
 	/**
 	 * Creates a new log file tailer that tails an existing file and checks the
@@ -109,12 +110,17 @@ public class FileTailer extends Thread {
 					? this.logfile.length() - mMostRecentLinesCount 
 					: 0;
 		}
+		
+		log.info("File " + this.logfile.getName()
+				+ " [pointer " + filePointer
+				+ ", length " + this.logfile.length()
+				+ "]");
 
 		try {
 			// Start tailing
 			this.tailing = true;
 			RandomAccessFile file = new RandomAccessFile(logfile, "r");
-			while(true) {
+			while(!Thread.currentThread().isInterrupted()) {
 				try {
 					// Compare the length of the file to the file pointer
 					long fileLength = this.logfile.length();
@@ -141,7 +147,7 @@ public class FileTailer extends Thread {
 					// Sleep for the specified interval
 					Thread.sleep(this.sampleInterval);
 				} catch (InterruptedException e) {
-					Thread.currentThread().interrupt();
+					log.info("FileTailer thread interrupted for file: " + logfile.getAbsolutePath());
 					break;
 				} catch (Exception e) {
 				}
@@ -153,6 +159,8 @@ public class FileTailer extends Thread {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		log.info("FileTailer thread stopped for file: " + logfile.getAbsolutePath());
 	}
 
 	private void processLogLine(String line) {
@@ -164,5 +172,13 @@ public class FileTailer extends Thread {
 			mCustomFields.add(customField);
 			mPrefix += customField + FIELD_DELIMITER;
 		}
+	}
+
+	public void setActive(boolean active) {
+		this.isActive = active;
+	}
+	
+	public boolean isActive() {
+		return this.isActive;
 	}
 }

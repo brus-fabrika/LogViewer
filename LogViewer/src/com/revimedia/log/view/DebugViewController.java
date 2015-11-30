@@ -21,7 +21,7 @@ public class DebugViewController implements IViewController {
 
 	private void openSocketForFile(File logFile) {
 		log.info("Start server socket thread");
-		mLogServer = new LogServerSocket(logFile);
+		mLogServer = new LogServerSocket();
 		mSocketThread = new Thread(mLogServer, "ServerSocket");
 		mSocketThread.start();
 	}

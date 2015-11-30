@@ -27,7 +27,11 @@ public class LogEntry {
 			this.mInstance.set(ss[0]);
 			this.mTimeStamp.set(ss[1]);
 			this.mPayload.set(ss[2]);
+		} else if(ss.length == 2) {
+			this.mInstance.set(ss[0]);
+			this.mPayload.set(ss[1]);
 		} else {
+			this.mInstance.set("?");
 			this.mPayload.set(ss[0]);
 		}
 	}
