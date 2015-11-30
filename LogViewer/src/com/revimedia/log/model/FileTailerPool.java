@@ -1,8 +1,11 @@
 package com.revimedia.log.model;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import com.revimedia.log.util.Configuration;
@@ -57,6 +60,27 @@ public class FileTailerPool {
 		}
 	}
 
+	public static void stopAllInactiveTailers() {
+		List<String> inactiveTailers = new ArrayList<>();
+		for(Entry<String, FileTailer> tailer : mTailerPool.entrySet()) {
+			FileTailer t = tailer.getValue();
+			if(false == t.isActive()) {
+				t.stopTailing();
+				try {
+					t.join();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				inactiveTailers.add(tailer.getKey());
+			}
+		}
+		
+		for(String fileName: inactiveTailers) {
+			mTailerPool.remove(fileName);
+		}
+	}
+	
 	public static void stopAllTailers() {
 		for(FileTailer tailer : mTailerPool.values()) {
 			tailer.stopTailing();

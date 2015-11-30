@@ -79,7 +79,7 @@ public class LogServerSocket implements Runnable {
 						}
 					}
 					
-					// TODO: remove all unused tailer threads
+					FileTailerPool.stopAllInactiveTailers();
 					
 					FileTailerPool.startAllTailers();
 					
@@ -102,7 +102,6 @@ public class LogServerSocket implements Runnable {
 		log.info("Start log server on port: " + mPortNum);
 		
 		if(mClients.size() == 0) {
-			//init();
 			startRefreshThread();
 		}
 

@@ -51,7 +51,7 @@ public class FileTailer extends Thread {
 	private Set<String> mCustomFields = new HashSet<>();
 
 	private String mPrefix = new String();
-	private boolean isActive = true;
+	private volatile boolean isActive = true;
 
 	/**
 	 * Creates a new log file tailer that tails an existing file and checks the
