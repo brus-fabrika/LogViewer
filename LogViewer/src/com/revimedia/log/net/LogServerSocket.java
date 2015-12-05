@@ -18,8 +18,9 @@ import com.revimedia.log.model.LxpInstanceList;
 import com.revimedia.log.util.Configuration;
 
 public class LogServerSocket implements Runnable {
-	final private Logger log = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
-	final private int mPortNum = Configuration.getInstance().getPropertyAsInt("port", 4444);
+	final static private Logger LOG = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
+	final static private int PORT_NUMBER = Configuration.getInstance().getPropertyAsInt("port", 4444);
+	final static private long FILELIST_REFRESH_INTERVAL = Configuration.getInstance().getPropertyAsInt("filelist_refresh_interval", 10000);
 	
 	private LxpInstanceList mInstanceList = new LxpInstanceList();
 	
@@ -37,31 +38,31 @@ public class LogServerSocket implements Runnable {
 
 	private void startRefreshThread() {
 		mInstanceListRefreshThread = new Thread(() -> {
-			log.info("Instance refresh thread started");
+			LOG.info("Instance refresh thread started");
 			while(!Thread.currentThread().isInterrupted()) {
 				mInstanceList.scan();
 				try {
 					for(String fileName : mInstanceList.getMostRecentFileList()) {
 						String instance = mInstanceList.getInstanceForFile(fileName);
 						if(!mInstanceFiles.containsKey(instance)) {
-							log.info("New instance added to log list: " + instance + "(" + fileName + ")");
+							LOG.info("New instance added to log list: " + instance + "(" + fileName + ")");
 							mInstanceFiles.put(instance, fileName);
 							FileTailer tailer = FileTailerPool.getTailerForFile(new File(fileName));
 							if(instance != null) {
 								tailer.addCustomField(instance);
 							}
 						} else {
-							log.info("Check file update for instance: " + instance);
+							LOG.info("Check file update for instance: " + instance);
 							String prevFileName = mInstanceFiles.get(instance);
 							
 							if(!FileTailerPool.isFileTailed(prevFileName)) {
-								log.severe("Error - file is not tailed but it should: " + prevFileName);
+								LOG.severe("Error - file is not tailed but it should: " + prevFileName);
 							}
 							
 							if(prevFileName.equals(fileName)) {
-								log.info("Instance already has the most recent file: " + fileName);
+								LOG.info("Instance already has the most recent file: " + fileName);
 							} else {
-								log.info("Instance has new the most recent file: " + fileName);
+								LOG.info("Instance has new the most recent file: " + fileName);
 								
 								mInstanceFiles.put(instance, fileName);
 								FileTailer tailer = FileTailerPool.getTailerForFile(new File(fileName));
@@ -73,7 +74,7 @@ public class LogServerSocket implements Runnable {
 								if(tailer != null) {
 									tailer.setActive(false);
 								} else {
-									log.severe("Error - Tailer object is not found for file: " + prevFileName);
+									LOG.severe("Error - Tailer object is not found for file: " + prevFileName);
 								}
 							}
 						}
@@ -83,40 +84,40 @@ public class LogServerSocket implements Runnable {
 					
 					FileTailerPool.startAllTailers();
 					
-					Thread.sleep(10000L); // TODO: refactor this later
+					Thread.sleep(FILELIST_REFRESH_INTERVAL);
 				} catch (InterruptedException e) {
-					log.info("Instance refresh thread interrupted");
+					LOG.info("Instance refresh thread interrupted");
 					break;
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}
-			log.info("Instance refresh thread stopped");
+			LOG.info("Instance refresh thread stopped");
 		});
 		mInstanceListRefreshThread.start();
 	}
 	
 	@Override
 	public void run() {
-		log.info("Start log server on port: " + mPortNum);
+		LOG.info("Start log server on port: " + PORT_NUMBER);
 		
 		if(mClients.size() == 0) {
 			startRefreshThread();
 		}
 
 		try {
-			mServerSocket = new ServerSocket(mPortNum);
+			mServerSocket = new ServerSocket(PORT_NUMBER);
 			while(isServerActivated) {
 				Socket clientSocket = mServerSocket.accept();
-				log.info("Client socket connected: " + clientSocket.getInetAddress());
+				LOG.info("Client socket connected: " + clientSocket.getInetAddress());
 				
 				mClients.add(new ClientLogPooler(clientSocket));
 			}
 		} catch(SocketException e) {
-			log.warning("Server interrupted");
+			LOG.warning("Server interrupted");
 		} catch (IOException e) {
-			log.severe(Arrays.toString(e.getStackTrace()));
+			LOG.severe(Arrays.toString(e.getStackTrace()));
 		}
 	}
 
@@ -131,7 +132,7 @@ public class LogServerSocket implements Runnable {
 					mInstanceListRefreshThread.interrupt();
 				}
 			} catch(IOException ignore) {
-				log.severe(Arrays.toString(ignore.getStackTrace()));
+				LOG.severe(Arrays.toString(ignore.getStackTrace()));
 			}
 			FileTailerPool.stopAllTailers();
 		}

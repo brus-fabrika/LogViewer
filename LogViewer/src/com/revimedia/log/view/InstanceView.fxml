@@ -4,11 +4,11 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox minHeight="100.0" minWidth="100.0" prefHeight="445.0" prefWidth="187.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.revimedia.log.view.InstanceViewController">
+<VBox minHeight="100.0" minWidth="100.0" prefHeight="445.0" prefWidth="187.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.revimedia.log.view.InstanceViewController">
    <children>
       <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="451.0" prefWidth="187.0" VBox.vgrow="ALWAYS">
          <content>
-            <ListView fx:id="listView" prefHeight="362.0" prefWidth="185.0" style="-fx-border-color: red;" />
+            <ListView fx:id="listView" prefHeight="362.0" prefWidth="185.0" styleClass="list-view" stylesheets="@DarkTheme.css" />
          </content>
       </ScrollPane>
    </children>
