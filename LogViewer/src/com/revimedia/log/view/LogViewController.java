@@ -3,6 +3,8 @@ package com.revimedia.log.view;
 import java.io.File;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,6 +16,7 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 
 import com.revimedia.log.model.FileTailer;
+import com.revimedia.log.model.FileTailerPool;
 import com.revimedia.log.model.IFileTailerListener;
 import com.revimedia.log.model.InstanceFilter;
 import com.revimedia.log.model.LogEntry;
@@ -23,7 +26,7 @@ import com.revimedia.log.net.LogClientSocket;
 public class LogViewController implements IFileTailerListener
 					, IViewController {
 
-	private Logger log = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
+	final private static Logger LOG = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	private static final int FILE_POOLING_INTERVAL = 5000;
 	@FXML
@@ -62,6 +65,8 @@ public class LogViewController implements IFileTailerListener
 		mLogTable.setItems(mLogs);
 	}
 	
+	
+	
 	@Override
 	public void loadLogData(File logFile) {
 		clearLogView();
@@ -76,11 +81,19 @@ public class LogViewController implements IFileTailerListener
 			}
 		}
 		
-		mLogFileTailer = new FileTailer(logFile, FILE_POOLING_INTERVAL, true);
+		mLogFileTailer = FileTailerPool.getTailerForFile(logFile);
+		
+		Pattern pattern = Pattern.compile("([A-Z]+)(\\d.+)([a,p]m[1,2])\\.log");
+		Matcher m = pattern.matcher(logFile.getName());
+		
+		if(m.find()) {
+			LOG.info("File opened for instance " + m.group(1));
+			mLogFileTailer.addCustomField(m.group(1));
+		}
+
 		mLogFileTailer.addLogFileTailerListener(this);
 		
-		mLogFileTailerThread = new Thread(mLogFileTailer);
-		mLogFileTailerThread.start();
+		FileTailerPool.startAllTailers();
 	}
 
 	public ObservableList<LogEntry> getLogs() {
@@ -98,7 +111,7 @@ public class LogViewController implements IFileTailerListener
 	}
 
 	public void onCtrlC() {
-		System.out.println( "Ctrl-C pressed !!!" );
+		LOG.info( "Ctrl-C pressed !!!" );
 		
 		ObservableList<LogEntry> selectedRows = mLogTable.getSelectionModel().getSelectedItems();
 		StringBuilder clipContent = new StringBuilder();
@@ -134,14 +147,14 @@ public class LogViewController implements IFileTailerListener
 	public boolean loadLogData(String host, int port) {
 		clearLogView();
 		
-		log.info("connect to server with "+ host +":" + port);
+		LOG.info("connect to server with "+ host +":" + port);
 		
 		mClientSocket = new LogClientSocket(host, port, this);
 		boolean isConnected = mClientSocket.tryConnect();
 		if(isConnected) {
 			new Thread(mClientSocket).start();
 		} else {
-			log.severe("connect to server with "+ host +":" + port + " FAILED");
+			LOG.severe("connect to server with "+ host +":" + port + " FAILED");
 		}
 		
 		return isConnected;
@@ -153,7 +166,7 @@ public class LogViewController implements IFileTailerListener
 	}
 
 	public void instanceChecked(String instanceName, boolean isChecked) {
-		log.info("Toggle filter for instance " + instanceName);
+		LOG.info("Toggle filter for instance " + instanceName);
 		if(isChecked) {
 			mInstanceFilter.removeCondition(instanceName);
 		} else {

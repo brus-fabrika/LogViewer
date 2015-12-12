@@ -54,9 +54,6 @@ public class MainApp extends Application {
 
 	private BorderPane mSearchResultsView;
 	
-	/**
-	 * Constructor
-	 */
 	public MainApp() {
 		mAppConfig = Configuration.getInstance();
 	}
@@ -104,7 +101,6 @@ public class MainApp extends Application {
 			
 			this.primaryStage.setOnCloseRequest( event -> logViewController.stopProcessLogging() );
 			
-			// Set person overview into the center of root layout.
 			rootLayout.setCenter(debugView);
 
 		} catch (IOException e) {

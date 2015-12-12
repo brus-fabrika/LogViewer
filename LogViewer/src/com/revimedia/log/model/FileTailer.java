@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  * notifications containing new log file lines, one at a time.
  */
 public class FileTailer extends Thread {
-	final private Logger log = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
+	final private static Logger LOG = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
 	/**
 	 * How frequently to check for file changes; defaults to 5 seconds
 	 */
@@ -95,12 +95,12 @@ public class FileTailer extends Thread {
 	}
 
 	public void stopTailing() {
-		log.info("Stop process the file: " + logfile.getAbsolutePath());
+		LOG.info("Stop process the file: " + logfile.getAbsolutePath());
 		this.interrupt();
 	}
 
 	public void run() {
-		log.info("FileTailer thread started for file: " + logfile.getAbsolutePath());
+		LOG.info("FileTailer thread started for file: " + logfile.getAbsolutePath());
 		// The file pointer keeps track of where we are in the file
 		long filePointer = 0;
 
@@ -111,7 +111,7 @@ public class FileTailer extends Thread {
 					: 0;
 		}
 		
-		log.info("File " + this.logfile.getName()
+		LOG.info("File " + this.logfile.getName()
 				+ " [pointer " + filePointer
 				+ ", length " + this.logfile.length()
 				+ "]");
@@ -144,10 +144,11 @@ public class FileTailer extends Thread {
 						filePointer = file.getFilePointer();
 					}
 
+					LOG.info("before sleep");
 					// Sleep for the specified interval
 					Thread.sleep(this.sampleInterval);
 				} catch (InterruptedException e) {
-					log.info("FileTailer thread interrupted for file: " + logfile.getAbsolutePath());
+					LOG.info("FileTailer thread interrupted for file: " + logfile.getAbsolutePath());
 					break;
 				} catch (Exception e) {
 				}
@@ -160,7 +161,7 @@ public class FileTailer extends Thread {
 			e.printStackTrace();
 		}
 		
-		log.info("FileTailer thread stopped for file: " + logfile.getAbsolutePath());
+		LOG.info("FileTailer thread stopped for file: " + logfile.getAbsolutePath());
 	}
 
 	private void processLogLine(String line) {
