@@ -28,7 +28,6 @@ public class LogViewController implements IFileTailerListener
 
 	final private static Logger LOG = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
-	private static final int FILE_POOLING_INTERVAL = 5000;
 	@FXML
 	private TableView<LogEntry> mLogTable;
 	@FXML
@@ -43,7 +42,6 @@ public class LogViewController implements IFileTailerListener
 	private ObservableList<LogEntry> mLogs = FXCollections.observableArrayList();
 	
 	private FileTailer mLogFileTailer;
-	private Thread mLogFileTailerThread;
 
 	private LogClientSocket mClientSocket;
 	
@@ -65,30 +63,26 @@ public class LogViewController implements IFileTailerListener
 		mLogTable.setItems(mLogs);
 	}
 	
-	
-	
 	@Override
 	public void loadLogData(File logFile) {
 		clearLogView();
 		
 		if(mLogFileTailer != null) {
 			mLogFileTailer.stopTailing();
-			try {
-				mLogFileTailerThread.join();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			mLogFileTailer.setActive(false);
+			FileTailerPool.stopAllInactiveTailers();
 		}
 		
 		mLogFileTailer = FileTailerPool.getTailerForFile(logFile);
 		
-		Pattern pattern = Pattern.compile("([A-Z]+)(\\d.+)([a,p]m[1,2])\\.log");
+		Pattern pattern = Pattern.compile("([A-Z]+)(\\d.+)([a,p]m[1,2])");
 		Matcher m = pattern.matcher(logFile.getName());
 		
 		if(m.find()) {
 			LOG.info("File opened for instance " + m.group(1));
 			mLogFileTailer.addCustomField(m.group(1));
+		} else {
+			mLogFileTailer.addCustomField("?");
 		}
 
 		mLogFileTailer.addLogFileTailerListener(this);

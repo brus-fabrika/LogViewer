@@ -79,6 +79,7 @@ public class SearchResultsTableViewController {
 	}
 
 	public void clearLogView() {
+		mRegexFilterText.clear();
 		mLogs.clear();
 		
 	}

@@ -144,7 +144,6 @@ public class FileTailer extends Thread {
 						filePointer = file.getFilePointer();
 					}
 
-					LOG.info("before sleep");
 					// Sleep for the specified interval
 					Thread.sleep(this.sampleInterval);
 				} catch (InterruptedException e) {

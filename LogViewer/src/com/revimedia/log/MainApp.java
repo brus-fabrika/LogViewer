@@ -217,6 +217,7 @@ public class MainApp extends Application {
 		fileChooser.setInitialDirectory(new File(mAppConfig.getProperty("default_path")));
 		File logFile = fileChooser.showOpenDialog(primaryStage);
 		if(logFile != null) {
+			mSearchViewCtrl.clearLogView();
 			logViewController.loadLogData(logFile);
 		}
 	}
