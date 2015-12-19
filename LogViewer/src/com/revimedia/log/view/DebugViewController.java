@@ -55,5 +55,10 @@ public class DebugViewController implements IViewController {
 	public LogEntry[] getAll() {
 		return null; //TODO throw NotYetImplemented
 	}
+
+	@Override
+	public void clearLogData() {
+		// TODO Auto-generated method stub
+	}
 	
 }

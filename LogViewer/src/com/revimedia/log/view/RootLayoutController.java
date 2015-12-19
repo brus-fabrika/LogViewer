@@ -38,6 +38,11 @@ public class RootLayoutController {
 		}
 	}
 	
+	@FXML
+	private void handleClearLogMenu(ActionEvent event) {
+		mainApp.clearLogView();
+	}
+	
 	public void setMainApp(MainApp mainApp) {
 		this.mainApp = mainApp;
 	}

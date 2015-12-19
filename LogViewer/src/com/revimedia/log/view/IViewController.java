@@ -9,4 +9,5 @@ public interface IViewController {
 	boolean loadLogData(String host, int port);
 	void stopProcessLogging();
 	LogEntry[] getAll();
+	void clearLogData();
 }

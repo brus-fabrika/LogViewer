@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
@@ -56,7 +57,7 @@ public class SearchResultsTableViewController {
 		
 		if(isRegexModeOff) {
 			mRegexPattern = null;
-			clearLogView();
+			clearLogData();
 			return;
 		}
 		
@@ -74,11 +75,29 @@ public class SearchResultsTableViewController {
 		}
 	}
 	
+	@FXML
+	private void onSearchUpdateClicked(ActionEvent event) {
+		mLogs.clear();
+		
+		LogEntry[] mLogsList = mParrentViewCtrl.getAll();
+		for(LogEntry log: mLogsList) {
+			Matcher m = mRegexPattern.matcher(log.getPayload());
+			if(m.find()) {
+				addResultLog(log);
+			}
+		}
+	}
+	
+	@FXML
+	private void onSearchClearClicked(ActionEvent event) {
+		clearLogData();
+	}
+	
 	public void addResultLog(LogEntry logLine) {
 		mLogs.add(logLine);
 	}
 
-	public void clearLogView() {
+	public void clearLogData() {
 		mRegexFilterText.clear();
 		mLogs.clear();
 		

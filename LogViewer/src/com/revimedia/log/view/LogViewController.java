@@ -65,7 +65,7 @@ public class LogViewController implements IFileTailerListener
 	
 	@Override
 	public void loadLogData(File logFile) {
-		clearLogView();
+		clearLogData();
 		
 		if(mLogFileTailer != null) {
 			mLogFileTailer.stopTailing();
@@ -133,13 +133,13 @@ public class LogViewController implements IFileTailerListener
 		}
 	}
 	
-	private void clearLogView() {
+	public void clearLogData() {
 		mLogs.clear();
 	}
 
 	@Override
 	public boolean loadLogData(String host, int port) {
-		clearLogView();
+		clearLogData();
 		
 		LOG.info("connect to server with "+ host +":" + port);
 		

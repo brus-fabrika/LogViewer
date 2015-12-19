@@ -180,6 +180,7 @@ public class MainApp extends Application {
 			rootLayout.setCenter(sp);
 			
 			final KeyCombination ctrlF = new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN);
+			final KeyCombination ctrlShiftD = new KeyCodeCombination(KeyCode.D, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN);
 			
 			primaryStage.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
 				if (ctrlF.match(event)) {
@@ -192,6 +193,9 @@ public class MainApp extends Application {
 						sp.setDividerPositions(0.75f);
 					}
 					mSearchResultsView.setVisible(!mSearchResultsView.isVisible());
+				}
+				if(ctrlShiftD.match(event)) {
+					clearLogView();
 				}
 			});
 			
@@ -217,7 +221,7 @@ public class MainApp extends Application {
 		fileChooser.setInitialDirectory(new File(mAppConfig.getProperty("default_path")));
 		File logFile = fileChooser.showOpenDialog(primaryStage);
 		if(logFile != null) {
-			mSearchViewCtrl.clearLogView();
+			mSearchViewCtrl.clearLogData();
 			logViewController.loadLogData(logFile);
 		}
 	}
@@ -233,5 +237,11 @@ public class MainApp extends Application {
 		log.info("disconnect");
 		logViewController.stopProcessLogging();
 		return true;
+	}
+
+	public void clearLogView() {
+		log.info("Clear logs");
+		logViewController.clearLogData();
+		mSearchViewCtrl.clearLogData();
 	}
 }
