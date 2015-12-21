@@ -10,4 +10,5 @@ public interface IViewController {
 	void stopProcessLogging();
 	LogEntry[] getAll();
 	void clearLogData();
+	void selectLog(LogEntry rowData);
 }

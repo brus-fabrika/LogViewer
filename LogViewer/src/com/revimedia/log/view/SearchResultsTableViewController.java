@@ -9,10 +9,12 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.KeyCode;
 
 import com.revimedia.log.model.LogEntry;
 
@@ -47,6 +49,26 @@ public class SearchResultsTableViewController {
 		mLogTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		
 		mLogTable.setItems(mLogs);
+		
+		mLogTable.setRowFactory( tv -> {
+			TableRow<LogEntry> row = new TableRow<>();
+			row.setOnMouseClicked(event -> {
+				if (event.getClickCount() == 2 && (!row.isEmpty())) {
+					LogEntry rowData = row.getItem();
+					mParrentViewCtrl.selectLog(rowData);
+				}
+			});
+			return row;
+		});
+		
+		mLogTable.setOnKeyReleased(event -> {
+			if(event.getCode() == KeyCode.ENTER) {
+				LogEntry rowData = mLogTable.getSelectionModel().getSelectedItem();
+				if(rowData != null) {
+					mParrentViewCtrl.selectLog(rowData);
+				}
+			}
+		});
 	}
 	
 	@FXML
