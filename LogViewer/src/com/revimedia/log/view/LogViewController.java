@@ -1,7 +1,8 @@
 package com.revimedia.log.view;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,17 +12,22 @@ import javafx.fxml.FXML;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 
 import com.revimedia.log.model.FileTailer;
-import com.revimedia.log.model.FileTailerListener;
+import com.revimedia.log.model.FileTailerPool;
+import com.revimedia.log.model.IFileTailerListener;
+import com.revimedia.log.model.InstanceFilter;
 import com.revimedia.log.model.LogEntry;
+import com.revimedia.log.model.LogFilters;
+import com.revimedia.log.net.LogClientSocket;
 
-public class LogViewController implements FileTailerListener{
+public class LogViewController implements IFileTailerListener
+					, IViewController {
 
-	private static final int FILE_POOLING_INTERVAL = 5000;
+	final private static Logger LOG = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
+	
 	@FXML
 	private TableView<LogEntry> mLogTable;
 	@FXML
@@ -31,24 +37,25 @@ public class LogViewController implements FileTailerListener{
 	@FXML
 	private TableColumn<LogEntry, String> mTimeColumn;
 	@FXML
-	private TextField mRegexFilterText;
-	
-	private ArrayList<LogEntry> mLogsList = new ArrayList<>();
+	private TableColumn<LogEntry, String> mInstanceColumn;
 	
 	private ObservableList<LogEntry> mLogs = FXCollections.observableArrayList();
 	
-	private String mRegex;
-	private Pattern mRegexPattern;
-	private boolean isRegexModeOff = true;
-	
 	private FileTailer mLogFileTailer;
+
+	private LogClientSocket mClientSocket;
+	
+	private LogFilters mLogFilters = new LogFilters();
+	private InstanceFilter mInstanceFilter = new InstanceFilter();
+	
+	private INewInstanceLogHandler mNewInstanceLogHandler;
 	
 	@FXML
 	private void initialize() {
 		mLineNumberColumn.setCellValueFactory(cellData -> cellData.getValue().lineNumberProperty());
-		mPayloadColumn.setCellValueFactory(cellData -> cellData.getValue().payloadProperty());
-		mTimeColumn.setCellValueFactory(cellData -> cellData.getValue().timestampProperty());
-		
+		mPayloadColumn.setCellValueFactory   (cellData -> cellData.getValue().payloadProperty());
+		mTimeColumn.setCellValueFactory      (cellData -> cellData.getValue().timestampProperty());
+		mInstanceColumn.setCellValueFactory  (cellData -> cellData.getValue().instanceProperty());
 		mLineNumberColumn.setMinWidth(50);
 		
 		mLogTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -56,53 +63,31 @@ public class LogViewController implements FileTailerListener{
 		mLogTable.setItems(mLogs);
 	}
 	
-	@FXML
-	private void onRegexUpdate() {
-		System.out.println("LogViewTableViewController.onRegexUpdate()");
-		
-		isRegexModeOff = mRegexFilterText.getText().isEmpty();
-		
-		if(isRegexModeOff) {
-			mRegexPattern = null;
-			mLogs.clear();
-			if(!mLogsList.isEmpty()) {
-				mLogs.setAll(mLogsList);
-			}
-			return;
-		}
-		
-		if(mRegexFilterText.getText().equals(mRegex)) return;
-		
-		mRegex = "(" + mRegexFilterText.getText() + ")";
-		mRegexPattern = Pattern.compile(mRegex);
-		
-		mLogs.clear();
-		
-		for(LogEntry log: mLogsList) {
-			Matcher m = mRegexPattern.matcher(log.getPayload());
-			if(m.find()) {
-				mLogs.add(log);
-			}
-		}
-	}
-
+	@Override
 	public void loadLogData(File logFile) {
-		clearLogView();
+		clearLogData();
 		
 		if(mLogFileTailer != null) {
 			mLogFileTailer.stopTailing();
-			try {
-				mLogFileTailer.join();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			mLogFileTailer.setActive(false);
+			FileTailerPool.stopAllInactiveTailers();
 		}
 		
-		mLogFileTailer = new FileTailer(logFile, FILE_POOLING_INTERVAL, true);
+		mLogFileTailer = FileTailerPool.getTailerForFile(logFile);
+		
+		Pattern pattern = Pattern.compile("([A-Z]+)(\\d.+)([a,p]m[1,2])");
+		Matcher m = pattern.matcher(logFile.getName());
+		
+		if(m.find()) {
+			LOG.info("File opened for instance " + m.group(1));
+			mLogFileTailer.addCustomField(m.group(1));
+		} else {
+			mLogFileTailer.addCustomField("?");
+		}
+
 		mLogFileTailer.addLogFileTailerListener(this);
 		
-		mLogFileTailer.start();
+		FileTailerPool.startAllTailers();
 	}
 
 	public ObservableList<LogEntry> getLogs() {
@@ -110,23 +95,23 @@ public class LogViewController implements FileTailerListener{
 	}
 
 	@Override
-	public void onNewFileLine(String line) {
-		System.out.println( line );
-		LogEntry e = new LogEntry(line, mLogsList.size()+1);
-		mLogsList.add(e);
-		
-		if(isRegexModeOff || mRegexPattern.matcher(e.getPayload()).find()) {
+	public void onFileUpdate(String line) {
+		boolean passed = mLogFilters.check(line);
+		if(passed) {
+			LogEntry e = new LogEntry(line, mLogs.size()+1);
 			mLogs.add(e);
+			mNewInstanceLogHandler.handleNewInstance(e.getInstance());;
 		}
 	}
 
 	public void onCtrlC() {
-		System.out.println( "Ctrl-C pressed !!!" );
+		LOG.info( "Ctrl-C pressed !!!" );
 		
 		ObservableList<LogEntry> selectedRows = mLogTable.getSelectionModel().getSelectedItems();
 		StringBuilder clipContent = new StringBuilder();
 		for(LogEntry log: selectedRows) {
-			clipContent.append(String.format("%s\t%s\n",
+			clipContent.append(String.format("%s\t%s\t%s\n",
+				log.getInstance() == null ? "" : log.getTimeStamp(),
 				log.getTimeStamp() == null ? "" : log.getTimeStamp(),
 				log.getPayload() == null ? "" : log.getPayload()));
 		}
@@ -138,19 +123,52 @@ public class LogViewController implements FileTailerListener{
 		}
 	}
 	
+	@Override
 	public void stopProcessLogging() {
-		System.out.println("Stop process the log");
 		if(mLogFileTailer != null) {
 			mLogFileTailer.stopTailing();
 		}
+		if(mClientSocket != null) {
+			mClientSocket.disconnect();
+		}
 	}
 	
-	private void clearLogView() {
-		mRegexFilterText.clear();
+	public void clearLogData() {
 		mLogs.clear();
-		isRegexModeOff = true;
-		mRegexPattern = null;
+	}
+
+	@Override
+	public boolean loadLogData(String host, int port) {
+		clearLogData();
 		
-		mLogsList = new ArrayList<>();
+		LOG.info("connect to server with "+ host +":" + port);
+		
+		mClientSocket = new LogClientSocket(host, port, this);
+		boolean isConnected = mClientSocket.tryConnect();
+		if(isConnected) {
+			new Thread(mClientSocket).start();
+		} else {
+			LOG.severe("connect to server with "+ host +":" + port + " FAILED");
+		}
+		
+		return isConnected;
+	}
+
+	@Override
+	public LogEntry[] getAll() {
+		return mLogs.toArray(new LogEntry[0]);
+	}
+
+	public void instanceChecked(String instanceName, boolean isChecked) {
+		LOG.info("Toggle filter for instance " + instanceName);
+		if(isChecked) {
+			mInstanceFilter.removeCondition(instanceName);
+		} else {
+			mInstanceFilter.addCondition(instanceName);
+		}
+	}
+
+	public void addNewInstanceHandler(INewInstanceLogHandler handler) {
+		mNewInstanceLogHandler = handler;
 	}
 }
