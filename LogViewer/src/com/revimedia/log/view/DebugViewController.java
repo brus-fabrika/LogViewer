@@ -60,5 +60,11 @@ public class DebugViewController implements IViewController {
 	public void clearLogData() {
 		// TODO Auto-generated method stub
 	}
+
+	@Override
+	public void selectLog(LogEntry rowData) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

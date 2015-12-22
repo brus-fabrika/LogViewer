@@ -171,4 +171,13 @@ public class LogViewController implements IFileTailerListener
 	public void addNewInstanceHandler(INewInstanceLogHandler handler) {
 		mNewInstanceLogHandler = handler;
 	}
+
+	@Override
+	public void selectLog(LogEntry rowData) {
+		mLogTable.getSelectionModel().clearSelection();
+		mLogTable.getFocusModel().focus(0);
+		mLogTable.getSelectionModel().select(rowData);
+		System.out.println(rowData.getPayload());
+		
+	}
 }
