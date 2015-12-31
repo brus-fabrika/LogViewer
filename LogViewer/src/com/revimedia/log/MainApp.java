@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -61,8 +62,18 @@ public class MainApp extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
-		String iconPath = getClass().getClassLoader().getResource("images").toString();
-		this.primaryStage.getIcons().add(new Image(iconPath + File.separator + mAppConfig.getProperty("app.icon")));
+		URL imageUrl = getClass().getClassLoader().getResource("images");
+		if(imageUrl == null) {
+			log.severe("Image resources are not found");
+		} else {
+			String iconPath = imageUrl.toString() + "/" + mAppConfig.getProperty("app.icon");
+			log.info("Icon path: " + iconPath);
+			Image icon = new Image(iconPath);
+			if(icon.isError()) {
+				log.warning("Icon create error with path: " + iconPath);
+			}
+			this.primaryStage.getIcons().add(icon);
+		}
 		
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		double width = screenSize.getWidth();

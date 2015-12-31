@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
+<jardesc>
+    <jar path="D:/temp/LogViewer.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/LogViewer/LogViewer.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="true" overwrite="true" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="true" mainClassHandleIdentifier="=LogViewer/src&lt;com.revimedia.log{MainApp.java[MainApp" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="false" exportJavaFiles="true" exportOutputFolder="true">
+        <file path="/LogViewer/build.fxbuild"/>
+        <file path="/LogViewer/LogViewer.jardesc"/>
+        <file path="/LogViewer/.gitignore"/>
+        <file path="/LogViewer/.project"/>
+        <javaElement handleIdentifier="=LogViewer/src"/>
+        <file path="/LogViewer/test.ucls"/>
+        <file path="/LogViewer/.classpath"/>
+        <javaElement handleIdentifier="=LogViewer/resource"/>
+    </selectedElements>
+</jardesc>

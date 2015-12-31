@@ -47,7 +47,6 @@ public class ClientLogPooler implements IFileTailerListener{
 	
 	@Override
 	public void onFileUpdate(String line) {
-		System.out.println(toString() + " send line " + line);
 		try {
 			mOutWriter.writeObject(line + "\n");
 		} catch (IOException e) {
