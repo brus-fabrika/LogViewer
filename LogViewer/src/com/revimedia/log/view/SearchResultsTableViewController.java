@@ -85,8 +85,10 @@ public class SearchResultsTableViewController {
 		
 		if(mRegexFilterText.getText().equals(mRegex)) return;
 		
+		mLogs.clear();
+		
 		mRegex = "(" + mRegexFilterText.getText() + ")";
-		mRegexPattern = Pattern.compile(mRegex);
+		mRegexPattern = Pattern.compile(mRegex, Pattern.CASE_INSENSITIVE);
 		
 		LogEntry[] mLogsList = mParrentViewCtrl.getAll();
 		for(LogEntry log: mLogsList) {
