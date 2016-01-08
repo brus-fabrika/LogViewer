@@ -5,12 +5,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 
-import com.revimedia.log.MainApp;
-
 public class RootLayoutController {
 
 	// Reference to the main application.
-	private MainApp mainApp;
+	private MainAppCtrl mainApp;
 	
 	private boolean isServerConnected = false;
 	
@@ -43,7 +41,7 @@ public class RootLayoutController {
 		mainApp.clearLogView();
 	}
 	
-	public void setMainApp(MainApp mainApp) {
+	public void setMainApp(MainAppCtrl mainApp) {
 		this.mainApp = mainApp;
 	}
 }
