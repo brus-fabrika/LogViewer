@@ -1,5 +1,7 @@
 package com.revimedia.log.view;
 
+import com.revimedia.log.util.Configuration;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.MenuBar;
@@ -32,6 +34,21 @@ public class RootLayoutController {
 			if(mainApp.serverConnect()) {
 				isServerConnected = true;
 				con.setText("Disconnect");
+			}
+		}
+	}
+	
+	@FXML
+	private void handleDefaultConnectMenu(ActionEvent event) {
+		if(isServerConnected) {
+			if(mainApp.serverDisconnect()) {
+				mainApp.getPrimaryStage().setTitle(Configuration.getInstance().getProperty("app.name") + " - Client");
+				isServerConnected = false;
+			}
+		} else {
+			if(mainApp.serverConnect()) {
+				mainApp.getPrimaryStage().setTitle(Configuration.getInstance().getProperty("app.name") + " - Client connected");
+				isServerConnected = true;
 			}
 		}
 	}

@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane prefHeight="400.0" prefWidth="600.0" stylesheets="@DarkTheme.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.revimedia.log.view.RootLayoutController">
+<BorderPane prefHeight="400.0" prefWidth="600.0" stylesheets="@DarkTheme.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.revimedia.log.view.RootLayoutController">
    <top>
       <MenuBar fx:id="mMainMenu" BorderPane.alignment="CENTER">
         <menus>
@@ -23,6 +23,12 @@
             </Menu>
           <Menu mnemonicParsing="false" text="Connection">
             <items>
+                  <Menu mnemonicParsing="false" text="Connect">
+                    <items>
+                      <MenuItem mnemonicParsing="false" onAction="#handleDefaultConnectMenu" text="default" />
+                        <MenuItem mnemonicParsing="false" text="Configure..." />
+                    </items>
+                  </Menu>
               <MenuItem mnemonicParsing="false" onAction="#handleConnectMenu" text="Connect" />
             </items>
           </Menu>
