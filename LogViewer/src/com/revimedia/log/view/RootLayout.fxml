@@ -26,7 +26,7 @@
                   <Menu mnemonicParsing="false" text="Connect">
                     <items>
                       <MenuItem mnemonicParsing="false" onAction="#handleDefaultConnectMenu" text="default" />
-                        <MenuItem mnemonicParsing="false" text="Configure..." />
+                        <MenuItem mnemonicParsing="false" onAction="#handleConnectConfigureMenu" text="Configure..." />
                     </items>
                   </Menu>
               <MenuItem mnemonicParsing="false" onAction="#handleConnectMenu" text="Connect" />

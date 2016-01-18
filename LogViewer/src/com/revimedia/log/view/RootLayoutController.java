@@ -1,11 +1,18 @@
 package com.revimedia.log.view;
 
+import java.io.IOException;
+
 import com.revimedia.log.util.Configuration;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class RootLayoutController {
 
@@ -50,6 +57,28 @@ public class RootLayoutController {
 				mainApp.getPrimaryStage().setTitle(Configuration.getInstance().getProperty("app.name") + " - Client connected");
 				isServerConnected = true;
 			}
+		}
+	}
+	
+	@FXML
+	private void handleConnectConfigureMenu(ActionEvent event) {
+		Stage connectionListStage = new Stage();
+		connectionListStage.initStyle(StageStyle.UTILITY);
+		connectionListStage.setResizable(false);
+		connectionListStage.setTitle("Connection List");
+		
+		try {
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(getClass().getResource("ConnectionsListView.fxml"));
+			BorderPane connectionsListView = (BorderPane) loader.load();
+			
+			Scene scene = new Scene(connectionsListView);
+			connectionListStage.setScene(scene);
+			connectionListStage.show();
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	

@@ -102,8 +102,9 @@ public class MainAppCtrl {
 
 			logViewController = loader.getController();
 
-			this.primaryStage.setOnCloseRequest(event -> logViewController
-					.stopProcessLogging());
+			this.primaryStage.setOnCloseRequest(
+				event -> logViewController.stopProcessLogging()
+			);
 
 			rootLayout.setCenter(debugView);
 

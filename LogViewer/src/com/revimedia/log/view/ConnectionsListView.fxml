@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.revimedia.log.view.ConnectionsListViewController">
+   <center>
+      <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="301.0" styleClass="background" stylesheets="@DarkTheme.css">
+         <children>
+            <ListView fx:id="remoteConnectionListView" prefHeight="200.0" prefWidth="200.0" />
+            <VBox prefHeight="400.0" prefWidth="112.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#handleAddButtonClick" prefHeight="33.0" prefWidth="169.0" text="Add...">
+                     <VBox.margin>
+                        <Insets bottom="3.0" left="6.0" right="6.0" top="6.0" />
+                     </VBox.margin>
+                  </Button>
+                  <Button mnemonicParsing="false" prefHeight="33.0" prefWidth="147.0" text="Edit...">
+                     <VBox.margin>
+                        <Insets bottom="3.0" left="6.0" right="6.0" top="6.0" />
+                     </VBox.margin>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#handleDeleteButtonClick" prefHeight="33.0" prefWidth="175.0" text="Delete">
+                     <VBox.margin>
+                        <Insets bottom="3.0" left="6.0" right="6.0" top="6.0" />
+                     </VBox.margin>
+                  </Button>
+                  <Button fx:id="mOkButton" mnemonicParsing="false" onAction="#handleOKButtonClick" prefHeight="33.0" prefWidth="135.0" text="Ok">
+                     <VBox.margin>
+                        <Insets bottom="3.0" left="6.0" right="6.0" top="6.0" />
+                     </VBox.margin>
+                  </Button>
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+   </center>
+</BorderPane>
